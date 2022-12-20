@@ -4,17 +4,26 @@
 3. [Installation](#installation)
 4. [Collaboration](#collaboration)
 5. [FAQs](#faqs)
+
 ### General Info
 ***
-Write down the general informations of your project. It is worth to always put a project status in the Readme file. This is where you can add it. 
-### Screenshot
-![Image text](https://www.united-internet.de/fileadmin/user_upload/Brands/Downloads/Logo_IONOS_by.jpg)
+The purpose of this projethe aim of this project is to make a node ros2.
+This node can receive information from the GPS quectel runner.
+It will disperse it to different ros topics for use in ros.
+The topics are as follows:
+
+* pose
+* gps_fix
+* fix
+* imu
+* visualization_marker
+
 ## Technologies
 ***
 A list of technologies used within the project:
-* [Technologie name](https://example.com): Version 12.3 
 * [Technologie name](https://example.com): Version 2.34
 * [Library name](https://example.com): Version 1234
+* [Technologie name](https://docs.ros.org/en/humble/Installation.html): Version humble
 ## Installation
 ***
 A little intro about the installation. 
