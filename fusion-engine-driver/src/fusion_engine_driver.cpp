@@ -80,8 +80,8 @@ public:
       points.pose.orientation.w = 1.0;
       points.id = id;
       points.type = visualization_msgs::msg::Marker::POINTS;
-      points.scale.x = 0.01;
-      points.scale.y = 0.01;
+      points.scale.x = 0.1;
+      points.scale.y = 0.1;
       points.color.g = 1.0f;
       points.color.a = 1.0;
       geometry_msgs::msg::Point p;
