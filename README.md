@@ -2,7 +2,7 @@
 1. [General Info](#general-info)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-4. [FAQs](#faqs)
+<!-- 4. [FAQs](#faqs) -->
 <!-- 4. [Collaboration](#collaboration) -->
 
 ### General Info
@@ -44,7 +44,7 @@ Give instructions on how to collaborate with your project.
 > Maybe you want to write a quote in this part. 
 > It should go over several rows?
 > This is how you do it. -->
-
+<!-- 
 ## FAQs
 ***
 A list of frequently asked questions
@@ -60,4 +60,4 @@ Answer of the third question with *italic words*.
 4. **Fourth question in bold**
 | Headline 1 in the tablehead | Headline 2 in the tablehead | Headline 3 in the tablehead |
 |:--------------|:-------------:|--------------:|
-| text-align left | text-align center | text-align right |
+| text-align left | text-align center | text-align right | -->
