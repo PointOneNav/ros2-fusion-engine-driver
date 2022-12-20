@@ -2,8 +2,8 @@
 1. [General Info](#general-info)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-<!-- 4. [Collaboration](#collaboration) -->
 4. [FAQs](#faqs)
+<!-- 4. [Collaboration](#collaboration) -->
 
 ### General Info
 ***
@@ -21,13 +21,16 @@ The topics are as follows:
 ## Technologies
 ***
 A list of technologies used within the project:
-* [Quectel Runner](https://s3.amazonaws.com/files.pointonenav.com/quectel/lg69t/quectel-lg69t-am-evb.0.6.8.zip): Version 0.6.8
+* [Quectel Runner](https://s3.amazonaws.com/files.pointonenav.com/quectel/lg69t/quectel-lg69t-am-evb.0.6.8.zip)
 * [Fusion Engine Client](https://github.com/PointOneNav/fusion-engine-client)
-* [ROS 2](https://docs.ros.org/en/humble/Installation.html): Version humble
+* [ROS 2](https://docs.ros.org/en/humble/Installation.html)
 
 ## Installation
 ***
-A little intro about the installation. 
+In order to install the project you will need to install others technologies.
+You will first need to install [Quectel Runner](https://s3.amazonaws.com/files.pointonenav.com/quectel/lg69t/quectel-lg69t-am-evb.0.6.8.zip).
+In a second step you should also install [Fusion Engine Client](https://github.com/PointOneNav/fusion-engine-client).
+Finally, you will also need [ROS 2](https://docs.ros.org/en/humble/Installation.html).
 ```
 $ git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git
 $ colcon build --packages-select fusion-engine-driver                                                            

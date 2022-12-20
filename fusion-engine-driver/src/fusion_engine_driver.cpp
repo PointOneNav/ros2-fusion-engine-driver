@@ -69,10 +69,11 @@ public:
       imu_publisher_->publish(evt.imu);
     }
     else if (evt.message_type == AtlasMessageType::POSE) {
+      visualization_msgs::msg::Marker points;
+
       evt.pose.header.frame_id = frame_id_;
       evt.pose.header.stamp = time;
       pose_publisher_->publish(evt.pose);
-      visualization_msgs::msg::Marker points;
       points.header.frame_id = "/my_frame";
       points.header.stamp = this->now();
       points.ns = "basic_shapes";
@@ -88,10 +89,6 @@ public:
       p.x = evt.pose.pose.position.x;
       p.y = evt.pose.pose.position.y;
       p.z = evt.pose.pose.position.z;
-
-      std::cout << "X == " << evt.pose.pose.position.x << std::endl;
-      std::cout << "Y == " << evt.pose.pose.position.y << std::endl;
-      std::cout << "Z == " << evt.pose.pose.position.z << std::endl;
 
       points.points.push_back(p);
       while (publisher_->get_subscription_count() < 1)
