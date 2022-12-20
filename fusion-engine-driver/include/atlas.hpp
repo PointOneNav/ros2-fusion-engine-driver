@@ -83,7 +83,7 @@ public:
       AtlasMessageEvent evt( AtlasUtils::toImu(contents) );
       fireAtlasMessageEvent(evt);
     }
-    else if (header.message_type == MessageType::POSE) {
+    else if (header.message_type == MessageType::ROS_POSE) {
       auto & contents = *reinterpret_cast<const point_one::fusion_engine::messages::ros::PoseMessage*>(payload);
       
       geometry_msgs::msg::PoseStamped pos =  AtlasUtils::toPose(contents);

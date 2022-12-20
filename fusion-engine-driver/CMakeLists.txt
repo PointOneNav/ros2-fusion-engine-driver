@@ -11,6 +11,7 @@ find_package(std_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -32,7 +33,7 @@ set(SRC
 
 add_executable(gps ${SRC})
 
-ament_target_dependencies(gps rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs)
+ament_target_dependencies(gps rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs)
 
 
 install(TARGETS
