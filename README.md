@@ -2,8 +2,8 @@
 1. [General Info](#general-info)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-4. [Collaboration](#collaboration)
-5. [FAQs](#faqs)
+<!-- 4. [Collaboration](#collaboration) -->
+4. [FAQs](#faqs)
 
 ### General Info
 ***
@@ -21,25 +21,27 @@ The topics are as follows:
 ## Technologies
 ***
 A list of technologies used within the project:
-* [Technologie name](https://example.com): Version 2.34
-* [Library name](https://example.com): Version 1234
-* [Technologie name](https://docs.ros.org/en/humble/Installation.html): Version humble
+* [Quectel Runner](https://s3.amazonaws.com/files.pointonenav.com/quectel/lg69t/quectel-lg69t-am-evb.0.6.8.zip): Version 0.6.8
+* [Fusion Engine Client](https://github.com/PointOneNav/fusion-engine-client)
+* [ROS 2](https://docs.ros.org/en/humble/Installation.html): Version humble
+
 ## Installation
 ***
 A little intro about the installation. 
 ```
-$ git clone https://example.com
-$ cd ../path/to/the/file
-$ npm install
-$ npm start
+$ git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git
+$ colcon build --packages-select fusion-engine-driver                                                            
+$ . install/local_setup.zsh                                                                                      
+$ ros2 run fusion-engine-driver gps
 ```
 Side information: To use the application in a special environment use ```lorem ipsum``` to start
-## Collaboration
+<!-- ## Collaboration
 ***
 Give instructions on how to collaborate with your project.
 > Maybe you want to write a quote in this part. 
 > It should go over several rows?
-> This is how you do it.
+> This is how you do it. -->
+
 ## FAQs
 ***
 A list of frequently asked questions
