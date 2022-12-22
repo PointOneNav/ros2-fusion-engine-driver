@@ -1,13 +1,13 @@
 ## Table of Contents
-1. [General Info](#general-info)
+1. [General Info](#fusion-engine-driver-ros2)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
 <!-- 4. [FAQs](#faqs) -->
 <!-- 4. [Collaboration](#collaboration) -->
 
-### General Info
+### Fusion engine driver ros2
 ***
-The purpose of this projethe aim of this project is to make a node ros2.
+The purpose of this project is to make a node ros2.
 This node can receive information from the GPS quectel runner.
 It will disperse it to different ros topics for use in ros.
 The topics are as follows:
@@ -21,23 +21,43 @@ The topics are as follows:
 ## Technologies
 ***
 A list of technologies used within the project:
-* [Quectel Runner](https://s3.amazonaws.com/files.pointonenav.com/quectel/lg69t/quectel-lg69t-am-evb.0.6.8.zip)
-* [Fusion Engine Client](https://github.com/PointOneNav/fusion-engine-client)
+* [Quectel GPS](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf)
 * [ROS 2](https://docs.ros.org/en/humble/Installation.html)
 
 ## Installation
 ***
 In order to install the project you will need to install others technologies.
-You will first need to install [Quectel Runner](https://s3.amazonaws.com/files.pointonenav.com/quectel/lg69t/quectel-lg69t-am-evb.0.6.8.zip).
-In a second step you should also install [Fusion Engine Client](https://github.com/PointOneNav/fusion-engine-client).
+You will first need to install [Quectel GPS](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf).
 Finally, you will also need [ROS 2](https://docs.ros.org/en/humble/Installation.html).
+
+Once these installations are done, you will have to do these actions on 3 different terminals.
+
+* Terminal 1.
+
+On this first terminal you must launch the gps on port 12345.
+
+* Terminal 2.
+
 ```
-$ git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git
+$ mkdir ros-fusion-engine
+$ git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git ros-fusion-engine
+$ cd ros-fusion-engine
 $ colcon build --packages-select fusion-engine-driver                                                            
-$ . install/local_setup.zsh                                                                                      
+$ . install/local_setup.bash                                                                                   
 $ ros2 run fusion-engine-driver gps
 ```
-Side information: To use the application in a special environment use ```lorem ipsum``` to start
+
+* Terminal 3.
+
+```
+$ rviz2
+```
+
+Once on rviz you will need to go to the File > Open config tab at the top of the page.
+And you will need to go to the rviz2_config folder in the repository and select the file from there.
+
+
+<!-- Side information: To use the application in a special environment use ```lorem ipsum``` to start -->
 <!-- ## Collaboration
 ***
 Give instructions on how to collaborate with your project.
