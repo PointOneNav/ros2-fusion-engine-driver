@@ -1,5 +1,5 @@
 ## Table of Contents
-1. [General Info](#fusion-engine-driver-ros2)
+1. [Fusion engine driver ros2](#fusion-engine-driver-ros2)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
 <!-- 4. [FAQs](#faqs) -->
