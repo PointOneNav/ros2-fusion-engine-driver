@@ -12,7 +12,7 @@ This node can receive information from the GPS quectel runner.
 It will disperse it to different ros topics for use in ros.
 The topics are as follows:
 
-* pose
+* "pose" send [PoseStamped] http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html
 * gps_fix
 * fix
 * imu
