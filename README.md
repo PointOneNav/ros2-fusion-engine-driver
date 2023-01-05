@@ -40,6 +40,15 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+The first time you use ros2 with the gps you may not get any messages you need to set the gps for specific message types. To do this after launching the virtual environment you will need to go in the folder quectel_runner/bin to make the following control. 
+
+```
+config_tool.py apply uart2_message_rate fe ROSPoseMessage 100ms
+config_tool.py apply uart2_message_rate fe ROSGPSFixMessage 100ms
+config_tool.py apply uart2_message_rate fe ROSIMUMessage 100ms
+config_tool.py save
+```
+
 After these commands you should go to the quectel_runner folder:
 
 ```
