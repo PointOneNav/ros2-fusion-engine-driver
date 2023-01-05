@@ -11,10 +11,10 @@ This project enables developers to use the fusion engine output data in a ROS2 n
 The node will receive from the quectel_runner the the data on the following topics that you can susbcribe to:
 
 * [pose](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)
-* [gps_fix] (http://docs.ros.org/en/hydro/api/gps_common/html/msg/GPSFix.html)
-* [fix] (http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/NavSatFix.html)
-* [imu] (http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Imu.html)
-* [visualization_marker] (http://wiki.ros.org/rviz/DisplayTypes/Marker)
+* [gps_fix](http://docs.ros.org/en/hydro/api/gps_common/html/msg/GPSFix.html)
+* [fix](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/NavSatFix.html)
+* [imu](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Imu.html)
+* [visualization_marker](http://wiki.ros.org/rviz/DisplayTypes/Marker)
 
 ## Requirements
 ***
