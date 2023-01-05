@@ -1,33 +1,31 @@
 ## Table of Contents
 1. [Fusion engine driver ros2](#fusion-engine-driver-ros2)
-2. [Technologies](#technologies)
+2. [Technologies](#requirements)
 3. [Installation](#installation)
 <!-- 4. [FAQs](#faqs) -->
 <!-- 4. [Collaboration](#collaboration) -->
 
 ### Fusion engine driver ros2
 ***
-The purpose of this project is to make a node ros2.
-This node can receive information from the GPS quectel runner.
-It will disperse it to different ros topics for use in ros.
-The topics are as follows:
+This project enables developers to use the fusion engine output data in a ROS2 node.
+The node will receive from the quectel_runner the the data on the following topics that you can susbcribe to:
 
-* "pose" send [PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)
-* gps_fix
-* fix
-* imu
-* visualization_marker
+* [pose](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)
+* [gps_fix] (http://docs.ros.org/en/hydro/api/gps_common/html/msg/GPSFix.html)
+* [fix] (http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/NavSatFix.html)
+* [imu] (http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Imu.html)
+* [visualization_marker] (http://wiki.ros.org/rviz/DisplayTypes/Marker)
 
-## Technologies
+## Requirements
 ***
 A list of technologies used within the project:
-* [Quectel GPS](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf)
+* [Quectel](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf)
 * [ROS 2](https://docs.ros.org/en/humble/Installation.html)
 
 ## Installation
 ***
 In order to install the project you will need to install others technologies.
-You will first need to install [Quectel GPS](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf).
+You will first need to install [Quectel](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf).
 Finally, you will also need [ROS 2](https://docs.ros.org/en/humble/Installation.html).
 
 Once these installations are done, you will have to do these actions on 3 different terminals.
