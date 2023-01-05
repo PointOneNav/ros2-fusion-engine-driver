@@ -35,25 +35,25 @@ Once these installations are done, you will have to do these actions on 3 differ
 In /fusion-engine-client/python folder:
 
 ```
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+$ python3 -m venv venv
+$ source venv/bin/activate
+$ pip install -r requirements.txt
 ```
 
 The first time you use ros2 with the gps you may not get any messages you need to set the gps for specific message types. To do this after launching the virtual environment you will need to go in the folder quectel_runner/bin to make the following control. 
 
 ```
-config_tool.py apply uart2_message_rate fe ROSPoseMessage 100ms
-config_tool.py apply uart2_message_rate fe ROSGPSFixMessage 100ms
-config_tool.py apply uart2_message_rate fe ROSIMUMessage 100ms
-config_tool.py save
+$ config_tool.py apply uart2_message_rate fe ROSPoseMessage 100ms
+$ config_tool.py apply uart2_message_rate fe ROSGPSFixMessage 100ms
+$ config_tool.py apply uart2_message_rate fe ROSIMUMessage 100ms
+$ config_tool.py save
 ```
 
 After these commands you should go to the quectel_runner folder:
 
 ```
-pip install -r requirements.txt
-python3 -m quectel_runner --device-id [YOUR ID] --polaris [YOUR KEY]  -v  --tcp 12345 --output-type=all
+$ pip install -r requirements.txt
+$ python3 -m quectel_runner --device-id [YOUR ID] --polaris [YOUR KEY]  -v  --tcp 12345 --output-type=all
 ```
 
 On this first terminal you must launch the gps on port 12345.
