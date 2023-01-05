@@ -32,6 +32,21 @@ Once these installations are done, you will have to do these actions on 3 differ
 
 * Terminal 1.
 
+In /fusion-engine-client/python folder:
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+After these commands you should go to the quectel_runner folder:
+
+```
+pip install -r requirements.txt
+python3 -m quectel_runner --device-id [YOUR ID] --polaris [YOUR KEY]  -v  --tcp 12345 --output-type=all
+```
+
 On this first terminal you must launch the gps on port 12345.
 
 * Terminal 2.
