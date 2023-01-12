@@ -75,11 +75,15 @@ $ ros2 run fusion-engine-driver gps
 $ rviz2
 ```
 
+Initially when you open rviz for the first time you will see this screen:
+
 ![Screenshot](./docs/images/basic_rviz_without_config.png)
 
-Once on rviz you will need to go to the File > Open config tab at the top of the page.
+When you're on rviz you will need to go to the File > Open config tab at the top of the page.
 And you will need to go to the rviz2_config folder in the repository and select the file from there.
+Once you have added the configuration you will have this screen:
 
+![Screenshot](./docs/images/rviz_window_with_config.png)
 
 <!-- Side information: To use the application in a special environment use ```lorem ipsum``` to start -->
 <!-- ## Collaboration
