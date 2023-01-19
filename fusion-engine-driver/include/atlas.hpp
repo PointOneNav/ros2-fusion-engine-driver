@@ -49,8 +49,8 @@ public:
    * @param node Link to ROS environment.
    * @return Nothing.
    */
-  void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port) {
-    recv.initialize(node, udp_port, connection_type, tcp_ip, tcp_port);
+  void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port, std::string tty) {
+    recv.initialize(node, udp_port, connection_type, tcp_ip, tcp_port, tty);
     this->node_ = node;
   }
 
@@ -114,8 +114,9 @@ public:
     }
     else if (connection_type == "udp") {
       recv.udp_service();
-    }
-    else {
+    } else if (connection_type == "tty") {
+      recv.tty_service();
+    } else {
       RCLCPP_INFO(node_->get_logger(), "Invalid connection type %s", connection_type.c_str());
     }
   }

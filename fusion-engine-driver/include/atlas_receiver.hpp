@@ -18,6 +18,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "atlas_byte_frame_listener.hpp"
 #include "atlas_byte_frame_event.hpp"
+#include "port_reader.hpp"
 
 /*
  * Reads bit stream from the Point One Nav Atlas and notifies all event 
@@ -41,12 +42,13 @@ public:
    * @param node link to ros environment.
    * @return Nothing.
    */
-  void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port) {
+  void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port, std::string tty_port) {
     node_ = node;
     udp_port_ = udp_port;
     connection_type_ = connection_type;
     tcp_ip_ = tcp_ip;
     tcp_port_ = tcp_port;
+    tty_port_ = tty_port;
   }
 
   /**
@@ -99,6 +101,28 @@ public:
     }
   }
 
+  void tty_service() {
+    uint8_t buffer[1024];
+    size_t total_bytes_read = 0;
+    portReader p(tty_port_);
+
+    while(rclcpp::ok()) {
+      ssize_t bytes_read = p.portRead(1024, &buffer[0]);
+      if(bytes_read < 0) {
+        RCLCPP_INFO(node_->get_logger(), "Error reading from socket: %s (%d)", std::strerror(errno), errno);
+        break;
+      }   
+      else if (bytes_read == 0) {
+        RCLCPP_INFO(node_->get_logger(), "Socket closed remotely.");
+        continue;;
+      }
+      total_bytes_read += bytes_read;
+      fireAtlasByteFrameEvent(buffer, bytes_read);
+      std::memset(&buffer[0], 0, bytes_read);
+    }
+    p.~portReader();
+  }
+
   /**
    * Read tcp input stream from the Point One Nav until this
    * system has shut down or this node is killed.
@@ -111,7 +135,6 @@ public:
     open_tcp_socket();
 
     try {
-      std::cout << std::to_string(sock_) << std::endl;
       while(rclcpp::ok()) {
         ssize_t bytes_read = recv(sock_, buffer, sizeof(buffer), 0);
         if (bytes_read < 0) {
@@ -142,6 +165,7 @@ public:
 private:
   int udp_port_ = 0;
   int tcp_port_ = 0;
+  std::string tty_port_;
   std::string connection_type_ = "";
   std::string tcp_ip_ = "";
   int sock_ = 0;
@@ -160,7 +184,6 @@ private:
    */
   void fireAtlasByteFrameEvent(uint8_t * frame, size_t bytes_read) {
     AtlasByteFrameEvent evt(frame, bytes_read);
-    // std::cout << "fire  atlas" << std::endl;
     for(AtlasByteFrameListener * listener : listenerList) {
       listener->receivedAtlasByteFrame(evt);
     }

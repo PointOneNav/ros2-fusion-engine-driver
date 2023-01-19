@@ -24,10 +24,11 @@ class PointOneNavAtlasNode : public AtlasMessageListener, public rclcpp::Node {
 public:
   PointOneNavAtlasNode() : Node("atlas_node"), gps(PointOneNavAtlas::getInstance()) {
     this->declare_parameter("atlas_udp_port", 23456);
-    this->declare_parameter("atlas_connection_type", "tcp");
+    this->declare_parameter("atlas_connection_type", "tty");
     this->declare_parameter("atlas_tcp_ip", "localhost");
     this->declare_parameter("atlas_tcp_port", 12345);
     this->declare_parameter("frame_id", "");
+    this->declare_parameter("tty_port", "/dev/ttyUSB1");
     frame_id_ = this->get_parameter("frame_id").as_string();
     pose_publisher_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", rclcpp::SensorDataQoS());
     gps_fix_publisher_ = this->create_publisher<gps_msgs::msg::GPSFix>("gps_fix", rclcpp::SensorDataQoS());
@@ -35,16 +36,13 @@ public:
     imu_publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", rclcpp::SensorDataQoS());
     publisher_ = this->create_publisher<visualization_msgs::msg::Marker>("visualization_marker", 1);
     timer_ = create_wall_timer(std::chrono::milliseconds(1), std::bind(&PointOneNavAtlasNode::serviceLoopCb, this));
-    std::cout << std::to_string(this->get_parameter("atlas_udp_port").as_int()) << std::endl;
-    std::cout << this->get_parameter("atlas_connection_type").as_string() << std::endl;
-    std::cout << this->get_parameter("atlas_tcp_ip").as_string() << std::endl;
-    std::cout << std::to_string(this->get_parameter("atlas_tcp_port").as_int()) << std::endl;
     gps.initialize(
       this,
       this->get_parameter("atlas_udp_port").as_int(),
       this->get_parameter("atlas_connection_type").as_string(),
       this->get_parameter("atlas_tcp_ip").as_string(),
-      this->get_parameter("atlas_tcp_port").as_int()
+      this->get_parameter("atlas_tcp_port").as_int(),
+      this->get_parameter("tty_port").as_string()
     );
     gps.addAtlasMessageListener(*this);
   }
