@@ -68,7 +68,6 @@ public:
     }
     else if (evt.message_type == AtlasMessageType::POSE) {
       visualization_msgs::msg::Marker points;
-
       evt.pose.header.frame_id = frame_id_;
       evt.pose.header.stamp = time;
       pose_publisher_->publish(evt.pose);
@@ -87,7 +86,6 @@ public:
       p.x = evt.pose.pose.position.x;
       p.y = evt.pose.pose.position.y;
       p.z = evt.pose.pose.position.z;
-
       points.points.push_back(p);
       while (publisher_->get_subscription_count() < 1)
       {

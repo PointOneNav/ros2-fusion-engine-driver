@@ -106,6 +106,8 @@ public:
     size_t total_bytes_read = 0;
     portReader p(tty_port_);
 
+    std::cout << "build port reader" << std::endl;
+
     while(rclcpp::ok()) {
       ssize_t bytes_read = p.portRead(1024, &buffer[0]);
       if(bytes_read < 0) {
@@ -113,12 +115,13 @@ public:
         break;
       }   
       else if (bytes_read == 0) {
-        RCLCPP_INFO(node_->get_logger(), "Socket closed remotely.");
-        continue;;
+        // RCLCPP_INFO(node_->get_logger(), "Socket closed remotely.");
+        continue;
       }
+      else
+        // std::cout << "find " << bytes_read << "bytes to read" << std::endl;
       total_bytes_read += bytes_read;
       fireAtlasByteFrameEvent(buffer, bytes_read);
-      std::memset(&buffer[0], 0, bytes_read);
     }
     p.~portReader();
   }

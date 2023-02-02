@@ -111,8 +111,7 @@ public:
     RCLCPP_INFO(node_->get_logger(), "Using connection_type %s", connection_type.c_str());
     if (connection_type == "tcp") {
       recv.tcp_service();
-    }
-    else if (connection_type == "udp") {
+    } else if (connection_type == "udp") {
       recv.udp_service();
     } else if (connection_type == "tty") {
       recv.tty_service();

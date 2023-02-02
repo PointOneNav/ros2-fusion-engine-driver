@@ -15,36 +15,19 @@ class portReader
 private:
     std::string _port;
     int _serialPort;
-    struct termios tty;
+    termios tty;
 
 public:
     portReader(std::string const& port) :
         _port(port)
     {
-        _serialPort = open(_port.c_str(), O_RDWR);
+        _serialPort = open(_port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
         if (_serialPort < 0) {
             throw std::runtime_error("Error opening serial port");
         }
-        std::memset(&tty, 0, sizeof tty);
-        if (tcgetattr(_serialPort, &tty) != 0) {
-            throw std::runtime_error("Error getting serial port attributes");
-        }
-
-        tty.c_cflag = CS8 | CREAD | CLOCAL;
-        tty.c_iflag = IGNPAR;
-        tty.c_oflag = 0;
-        tty.c_lflag = 0;
-        tty.c_cc[VMIN] = 1;
-        tty.c_cc[VTIME] = 5;
-
-        if (cfsetispeed(&tty, B460800) != 0 || cfsetospeed(&tty, B460800) != 0) {
-            throw std::runtime_error("Error setting baud rate");
-        }
-
-        if (tcsetattr(_serialPort, TCSANOW, &tty) != 0) {
-            throw std::runtime_error("Error setting serial port attributes");
-        }
-
+        tcgetattr(_serialPort, &tty);
+        cfmakeraw(&tty);
+        tcsetattr(_serialPort, TCSANOW, &tty);
     };
 
     uint8_t portRead(ssize_t n, uint8_t *buffer)

@@ -101,8 +101,6 @@ size_t FusionEngineFramer::OnData(const uint8_t* buffer, size_t length_bytes) {
   // Process each byte. If the user-supplied buffer was too small, we can't
   // parse messages.
   if (buffer_ != nullptr) {
-    VLOG(2) << "Received " << length_bytes << " bytes.";
-    // std::cout << "Received " << length_bytes << " bytes." << std::endl;
     size_t total_dispatched_bytes = 0;
     for (size_t idx = 0; idx < length_bytes; ++idx) {
       uint8_t byte = buffer[idx];
