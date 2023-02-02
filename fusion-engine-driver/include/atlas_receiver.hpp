@@ -106,8 +106,6 @@ public:
     size_t total_bytes_read = 0;
     portReader p(tty_port_);
 
-    std::cout << "build port reader" << std::endl;
-
     while(rclcpp::ok()) {
       ssize_t bytes_read = p.portRead(1024, &buffer[0]);
       if(bytes_read < 0) {

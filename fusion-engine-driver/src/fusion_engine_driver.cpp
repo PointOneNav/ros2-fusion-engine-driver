@@ -1,6 +1,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <cmath>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp" 
@@ -86,19 +87,24 @@ public:
       p.x = evt.pose.pose.position.x;
       p.y = evt.pose.pose.position.y;
       p.z = evt.pose.pose.position.z;
-      points.points.push_back(p);
-      while (publisher_->get_subscription_count() < 1)
-      {
-          if (!rclcpp::ok())
-          {
-            return;
-          }
-          RCLCPP_WARN_ONCE(this->get_logger(), "Please create a subscriber to the marker");
-          sleep(1);
+      if (std::isnan(p.x) or std::isnan(p.y) or std::isnan(p.z)) {
+        RCLCPP_INFO(this->get_logger(), "Invalid message pos {%f, %f, %f}", p.x, p.y, p.z);
+      } else {
+        points.points.push_back(p);
+        while (publisher_->get_subscription_count() < 1)
+        {
+            if (!rclcpp::ok())
+            {
+              return;
+            }
+            RCLCPP_WARN_ONCE(this->get_logger(), "Please create a subscriber to the marker");
+            sleep(1);
+        }
+        publisher_->publish(points);
+        id++;
       }
-      publisher_->publish(points);
-      id++;
-    }
+
+      }
   }
 
   /**
