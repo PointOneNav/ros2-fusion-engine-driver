@@ -100,11 +100,12 @@ public:
             RCLCPP_WARN_ONCE(this->get_logger(), "Please create a subscriber to the marker");
             sleep(1);
         }
+        RCLCPP_INFO(this->get_logger(), "message pos received {%f, %f, %f}", p.x, p.y, p.z);
         publisher_->publish(points);
         id++;
+      
       }
-
-      }
+    }
   }
 
   /**

@@ -114,10 +114,7 @@ public:
       }   
       else if (bytes_read == 0) {
         // RCLCPP_INFO(node_->get_logger(), "Socket closed remotely.");
-        continue;
       }
-      else
-        // std::cout << "find " << bytes_read << "bytes to read" << std::endl;
       total_bytes_read += bytes_read;
       fireAtlasByteFrameEvent(buffer, bytes_read);
     }
