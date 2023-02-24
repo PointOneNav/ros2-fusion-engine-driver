@@ -17,7 +17,7 @@
 #include "atlas_message_event.hpp"
 #include "atlas_byte_frame_listener.hpp"
 #include "atlas_byte_frame_event.hpp"
-#include "atlas_receiver.hpp"
+#include "fusion_engine_receiver.hpp"
 #include "utils.hpp"
 
 using namespace point_one::fusion_engine::messages;
@@ -33,14 +33,14 @@ namespace point_one {
  * listeners attached to this singelton object once a complete message has
  * been received.
  */
-class PointOneNavAtlas : public AtlasByteFrameListener {
+class FusionEngineInterface : public AtlasByteFrameListener {
 
 public:
   /**
    * Singleton object. Only one message parser is necessary.
    */
-  static PointOneNavAtlas & getInstance() {
-    static PointOneNavAtlas instance; // static method fields are instatiated once
+  static FusionEngineInterface & getInstance() {
+    static FusionEngineInterface instance; // static method fields are instatiated once
     return instance;
   }
 
@@ -123,11 +123,11 @@ public:
 private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;
   std::vector<AtlasMessageListener *> listenerList;
-  AtlasReceiver & recv;
+  FusionEngineReceiver & recv;
   rclcpp::Node * node_;
 
   /* only one instance will exist - singleton object. */
-  PointOneNavAtlas() : framer(1024), recv(AtlasReceiver::getInstance()) {
+  FusionEngineInterface() : framer(1024), recv(FusionEngineReceiver::getInstance()) {
     recv.addByteFrameListener(*this);
     framer.SetMessageCallback(point_one::fusion_engine::messageReceived);
   }
@@ -148,7 +148,7 @@ private:
 namespace point_one {
   namespace fusion_engine {
     void messageReceived(const messages::MessageHeader& header, const void* payload_in) {
-      PointOneNavAtlas::getInstance().messageReceived(header, payload_in);
+      FusionEngineInterface::getInstance().messageReceived(header, payload_in);
     }
   }
 }

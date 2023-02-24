@@ -20,9 +20,9 @@
 /*
  * Point One Nav Atlas Node publishes realtime GPSFix/IMU messages.
  */ 
-class PointOneNavAtlasNode : public AtlasMessageListener, public rclcpp::Node {
+class FusionEngineInterfaceNode : public AtlasMessageListener, public rclcpp::Node {
 public:
-  PointOneNavAtlasNode() : Node("atlas_node"), gps(PointOneNavAtlas::getInstance()) {
+  FusionEngineInterfaceNode() : Node("atlas_node"), gps(FusionEngineInterface::getInstance()) {
     this->declare_parameter("atlas_udp_port", 23456);
     this->declare_parameter("atlas_connection_type", "tcp");
     this->declare_parameter("atlas_tcp_ip", "localhost");
@@ -34,7 +34,7 @@ public:
     nav_fix_publisher_ = this->create_publisher<sensor_msgs::msg::NavSatFix>("fix", rclcpp::SensorDataQoS());
     imu_publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", rclcpp::SensorDataQoS());
     publisher_ = this->create_publisher<visualization_msgs::msg::Marker>("visualization_marker", 1);
-    timer_ = create_wall_timer(std::chrono::milliseconds(1), std::bind(&PointOneNavAtlasNode::serviceLoopCb, this));
+    timer_ = create_wall_timer(std::chrono::milliseconds(1), std::bind(&FusionEngineInterfaceNode::serviceLoopCb, this));
     std::cout << std::to_string(this->get_parameter("atlas_udp_port").as_int()) << std::endl;
     std::cout << this->get_parameter("atlas_connection_type").as_string() << std::endl;
     std::cout << this->get_parameter("atlas_tcp_ip").as_string() << std::endl;
@@ -133,7 +133,7 @@ public:
   }
 
 private:
-  PointOneNavAtlas & gps;
+  FusionEngineInterface & gps;
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_publisher_;
   rclcpp::Publisher<gps_msgs::msg::GPSFix>::SharedPtr gps_fix_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
@@ -156,7 +156,7 @@ private:
 
 int main(int argc, char * argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<PointOneNavAtlasNode>());
+  rclcpp::spin(std::make_shared<FusionEngineInterfaceNode>());
   rclcpp::shutdown();
   return 0;
 }

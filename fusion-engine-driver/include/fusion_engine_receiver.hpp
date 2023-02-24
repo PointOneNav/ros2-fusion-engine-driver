@@ -1,5 +1,5 @@
-#ifndef ATLAS_RECEIVER_HPP
-#define ATLAS_RECEIVER_HPP
+#ifndef FUSION_ENGINE_RECEIVER_HPP
+#define FUSION_ENGINE_RECEIVER_HPP
 
 #include <cerrno>
 #include <cmath> // For lround()
@@ -24,15 +24,15 @@
  * listeners attached to this singleton object once a raw data packet 
  * been receieved.
  */
-class AtlasReceiver {
+class FusionEngineReceiver {
 public:
 
   /**
    * Singleton object. Only one message parser is necessary.
-   * @return static reference to single AtlasReceiver instance.
+   * @return static reference to single FusionEngineReceiver instance.
    */
-  static AtlasReceiver & getInstance() {
-    static AtlasReceiver instance; // static method field instatiated once
+  static FusionEngineReceiver & getInstance() {
+    static FusionEngineReceiver instance; // static method field instatiated once
     return instance;
   }
 
@@ -89,7 +89,7 @@ public:
         inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), their_ip, sizeof(their_ip));
         total_bytes_read += bytes_read;
         // notify listeners
-        fireAtlasByteFrameEvent(buffer, bytes_read);
+        DecodeFusionEngineMessage(buffer, bytes_read);
       }
       close(sock_);
       RCLCPP_INFO(node_->get_logger(), "Finished. %zu bytes read.", total_bytes_read);
@@ -123,7 +123,7 @@ public:
           break;
         }
         total_bytes_read += bytes_read;
-        fireAtlasByteFrameEvent(buffer, bytes_read);
+        DecodeFusionEngineMessage(buffer, bytes_read);
       }
     } catch(std::exception const & ex) {
       RCLCPP_ERROR_STREAM(node_->get_logger(), "Decoder exception: " << ex.what());
@@ -149,7 +149,7 @@ private:
   rclcpp::Node * node_;
 
   /* private constructor for singleton design */
-  AtlasReceiver() {}
+  FusionEngineReceiver() {}
 
   /**
    * Notifies all AtlasByteFrameListeners of a newly recieved byte frame.
@@ -158,7 +158,7 @@ private:
    * @param frame_ip Frame source ip.
    * @return Nothing.
    */
-  void fireAtlasByteFrameEvent(uint8_t * frame, size_t bytes_read) {
+  void DecodeFusionEngineMessage(uint8_t * frame, size_t bytes_read) {
     AtlasByteFrameEvent evt(frame, bytes_read);
     // std::cout << "fire  atlas" << std::endl;
     for(AtlasByteFrameListener * listener : listenerList) {
@@ -174,7 +174,7 @@ private:
     // create UDP socket.
     sock_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if(sock_ < 0) {
-      RCLCPP_INFO(node_->get_logger(), "Error creating socket");
+      RCLCPP_INFO(node_->get_logger(), "Error creating UDP socket.");
       return 2;
     }   
     // bind socket to port.
@@ -185,7 +185,7 @@ private:
     int ret = bind(sock_, (struct sockaddr *) &addr, sizeof(addr));
     if(ret < 0) {
       close(sock_);
-      RCLCPP_INFO(node_->get_logger(), "Error binding");
+      RCLCPP_INFO(node_->get_logger(), "Error binding UDP");
       return 3;
     }
     RCLCPP_INFO(node_->get_logger(), "Opened port %d", udp_port_);
