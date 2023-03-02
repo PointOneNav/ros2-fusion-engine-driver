@@ -58,79 +58,6 @@ public:
     listenerList.push_back(&listener);
   }
 
-  // TODO: remove byte frame listener
-
-  /**
-   * Read udp input stream from the Point One Nav until this
-   * system has shut down or this node is killed.
-   * @return Nothing.
-   */
-  void udp_service() {
-    uint8_t buffer[1024];
-    size_t total_bytes_read = 0;
-    struct sockaddr_storage their_addr; // address of recieved packet
-    socklen_t addr_len = sizeof(their_addr);
-    char their_ip[INET6_ADDRSTRLEN];
-
-    open_udp_socket(); 
-
-    try {
-      while(rclcpp::ok()) {
-        // continuously read input stream until system is shutdown / rclcpp::ok().
-        ssize_t bytes_read = recvfrom(sock_, buffer, sizeof(buffer), 0, (struct sockaddr *)&their_addr, &addr_len);
-        if(bytes_read < 0) {
-          RCLCPP_INFO(node_->get_logger(), "Error reading from socket: %s (%d)", std::strerror(errno), errno);
-          break;
-        }   
-        else if (bytes_read == 0) {
-          RCLCPP_INFO(node_->get_logger(), "Socket closed remotely.");
-          break;
-        }
-        inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), their_ip, sizeof(their_ip));
-        total_bytes_read += bytes_read;
-        // notify listeners
-        DecodeFusionEngineMessage(buffer, bytes_read);
-      }
-      close(sock_);
-      RCLCPP_INFO(node_->get_logger(), "Finished. %zu bytes read.", total_bytes_read);
-    }
-    catch(std::exception const & ex) {
-      RCLCPP_ERROR_STREAM(node_->get_logger(), "Decoder exception: " << ex.what());
-    }
-  }
-
-  /**
-   * Read tcp input stream from the Point One Nav until this
-   * system has shut down or this node is killed.
-   * @return Nothing.
-   */
-  void tcp_service() {
-    uint8_t buffer[1024];
-    size_t total_bytes_read = 0;
-
-    open_tcp_socket();
-
-    try {
-      std::cout << std::to_string(sock_) << std::endl;
-      while(rclcpp::ok()) {
-        ssize_t bytes_read = recv(sock_, buffer, sizeof(buffer), 0);
-        if (bytes_read < 0) {
-          RCLCPP_INFO(node_->get_logger(), "Error reading from socket: %s (%d)", std::strerror(errno), errno);
-          break;
-        }
-        else if (bytes_read == 0) {
-          RCLCPP_INFO(node_->get_logger(), "Socket closed remotely.");
-          break;
-        }
-        total_bytes_read += bytes_read;
-        DecodeFusionEngineMessage(buffer, bytes_read);
-      }
-    } catch(std::exception const & ex) {
-      RCLCPP_ERROR_STREAM(node_->get_logger(), "Decoder exception: " << ex.what());
-    }
-
-  }
-
   /**
    * Getter for type of network transport layer protocol (udp/tcp).
    * @return String identification of connection type protocol.
@@ -160,7 +87,6 @@ private:
    */
   void DecodeFusionEngineMessage(uint8_t * frame, size_t bytes_read) {
     AtlasByteFrameEvent evt(frame, bytes_read);
-    // std::cout << "fire  atlas" << std::endl;
     for(AtlasByteFrameListener * listener : listenerList) {
       listener->receivedAtlasByteFrame(evt);
     }

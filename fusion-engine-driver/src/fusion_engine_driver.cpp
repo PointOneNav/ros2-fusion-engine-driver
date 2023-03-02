@@ -24,7 +24,7 @@ class FusionEngineInterfaceNode : public AtlasMessageListener, public rclcpp::No
 public:
   FusionEngineInterfaceNode() : Node("atlas_node"), gps(FusionEngineInterface::getInstance()) {
     this->declare_parameter("atlas_udp_port", 23456);
-    this->declare_parameter("atlas_connection_type", "tcp");
+    this->declare_parameter("atlas_connection_type", "udp");
     this->declare_parameter("atlas_tcp_ip", "localhost");
     this->declare_parameter("atlas_tcp_port", 12345);
     this->declare_parameter("frame_id", "");
@@ -35,17 +35,27 @@ public:
     imu_publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", rclcpp::SensorDataQoS());
     publisher_ = this->create_publisher<visualization_msgs::msg::Marker>("visualization_marker", 1);
     timer_ = create_wall_timer(std::chrono::milliseconds(1), std::bind(&FusionEngineInterfaceNode::serviceLoopCb, this));
-    std::cout << std::to_string(this->get_parameter("atlas_udp_port").as_int()) << std::endl;
-    std::cout << this->get_parameter("atlas_connection_type").as_string() << std::endl;
-    std::cout << this->get_parameter("atlas_tcp_ip").as_string() << std::endl;
-    std::cout << std::to_string(this->get_parameter("atlas_tcp_port").as_int()) << std::endl;
-    gps.initialize(
-      this,
-      this->get_parameter("atlas_udp_port").as_int(),
-      this->get_parameter("atlas_connection_type").as_string(),
-      this->get_parameter("atlas_tcp_ip").as_string(),
-      this->get_parameter("atlas_tcp_port").as_int()
-    );
+    
+    if (this->has_parameter("atlas_connection_type")) {
+      std::string argValue(this->get_parameter("atlas_connection_type").as_string());
+      if (argValue == "tcp") {
+        gps.initialize(this,
+        this->get_parameter("atlas_tcp_ip").as_string(),
+        this->get_parameter("atlas_tcp_port").as_int());
+      } else if (argValue == "udp") {
+        gps.initialize(this,
+        this->get_parameter("atlas_udp_port").as_int());
+      }
+    } else {
+      // exit(84);
+    }
+    // gps.initialize(
+    //   this,
+    //   this->get_parameter("atlas_udp_port").as_int(),
+    //   this->get_parameter("atlas_connection_type").as_string(),
+    //   this->get_parameter("atlas_tcp_ip").as_string(),
+    //   this->get_parameter("atlas_tcp_port").as_int()
+    // );
     gps.addAtlasMessageListener(*this);
   }
 

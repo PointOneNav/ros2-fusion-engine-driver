@@ -13,6 +13,9 @@
 #include "sensor_msgs/msg/imu.hpp"
 #include "gps_msgs/msg/gps_fix.hpp"
 
+#include "tcp_listener.hpp"
+#include "udp_listener.hpp"
+
 #include "atlas_message_listener.hpp"
 #include "atlas_message_event.hpp"
 #include "atlas_byte_frame_listener.hpp"
@@ -22,6 +25,7 @@
 
 using namespace point_one::fusion_engine::messages;
 using namespace point_one::fusion_engine::messages::ros;
+
 namespace point_one {
   namespace fusion_engine {
     void messageReceived(const messages::MessageHeader&, const void*);
@@ -49,9 +53,21 @@ public:
    * @param node Link to ROS environment.
    * @return Nothing.
    */
-  void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port) {
-    recv.initialize(node, udp_port, connection_type, tcp_ip, tcp_port);
+  // void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port) {
+  //   recv.initialize(node, udp_port, connection_type, tcp_ip, tcp_port);
+  //   this->node_ = node;
+  // }
+
+  void initialize(rclcpp::Node * node, std::string tcp_ip, int tcp_port) {
     this->node_ = node;
+    data_listener_ = std::make_shared<TcpListener>(node_, tcp_ip, tcp_port);
+    RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tcp in port %d", tcp_port);
+  }
+
+  void initialize(rclcpp::Node * node, int udp_port) {
+    this->node_ = node;
+    data_listener_ = std::make_shared<UdpListener>(node_, udp_port);
+    RCLCPP_INFO(node_->get_logger(), "Initialize connection_type udp in port %d", udp_port);
   }
 
   /**
@@ -107,17 +123,8 @@ public:
    * @return Nothing.
    */
   void service() {
-    auto connection_type = recv.get_connection_type();
-    RCLCPP_INFO(node_->get_logger(), "Using connection_type %s", connection_type.c_str());
-    if (connection_type == "tcp") {
-      recv.tcp_service();
-    }
-    else if (connection_type == "udp") {
-      recv.udp_service();
-    }
-    else {
-      RCLCPP_INFO(node_->get_logger(), "Invalid connection type %s", connection_type.c_str());
-    }
+    RCLCPP_INFO(node_->get_logger(), "Start listening using connection_type");
+    data_listener_->listen();
   }
 
 private:
@@ -125,6 +132,7 @@ private:
   std::vector<AtlasMessageListener *> listenerList;
   FusionEngineReceiver & recv;
   rclcpp::Node * node_;
+  std::shared_ptr<DataListener> data_listener_;
 
   /* only one instance will exist - singleton object. */
   FusionEngineInterface() : framer(1024), recv(FusionEngineReceiver::getInstance()) {

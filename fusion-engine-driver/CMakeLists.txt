@@ -22,6 +22,7 @@ include_directories(./include/interfaces)
 include_directories(./include)
 include_directories(./include/messages)
 include_directories(./include/parsers)
+include_directories(./include/listener)
 
 set(SRC
     ${SOURCE}
