@@ -4,9 +4,10 @@
 #include <vector>
 #include <cstdio>
 
-#include "fusion_engine_framer.h"
-#include "core.h"
-#include "ros.h"
+#include <point_one/fusion_engine/messages/core.h>
+#include <point_one/fusion_engine/parsers/fusion_engine_framer.h>
+#include <point_one/fusion_engine/messages/core.h>
+#include <point_one/fusion_engine/messages/ros.h>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -16,12 +17,12 @@
 #include "tcp_listener.hpp"
 #include "udp_listener.hpp"
 
+#include "fusion_engine_utils.hpp"
 #include "atlas_message_listener.hpp"
 #include "atlas_message_event.hpp"
 #include "atlas_byte_frame_listener.hpp"
 #include "atlas_byte_frame_event.hpp"
 #include "fusion_engine_receiver.hpp"
-#include "utils.hpp"
 
 using namespace point_one::fusion_engine::messages;
 using namespace point_one::fusion_engine::messages::ros;

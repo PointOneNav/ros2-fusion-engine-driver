@@ -2,8 +2,26 @@ cmake_minimum_required(VERSION 3.8)
 project(fusion-engine-driver)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra)
 endif()
+
+set(CMAKE_CXX_STANDARD 14)
+
+# Set CMake policy for CMP0077 to NEW
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
+# Disable example building for fusion engine client
+set(P1_FE_BUILD_EXAMPLES OFF)
+
+# Fetch and include fusion engine client library
+include(FetchContent)
+FetchContent_Declare(
+    fusion_engine_client
+    GIT_REPOSITORY https://github.com/PointOneNav/fusion-engine-client.git
+    GIT_TAG v1.16.0
+)
+FetchContent_Populate(fusion_engine_client)
+add_subdirectory(${fusion_engine_client_SOURCE_DIR} ${fusion_engine_client_BINARY_DIR})
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -17,25 +35,19 @@ find_package(rclcpp REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-include_directories(./include/common)
-include_directories(./include/interfaces)
 include_directories(./include)
-include_directories(./include/messages)
-include_directories(./include/parsers)
 include_directories(./include/listener)
+include_directories(./include/interfaces)
 
 set(SRC
     ${SOURCE}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/fusion_engine_driver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/common/logging.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/messages/crc.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/parsers/fusion_engine_framer.cc
     )
 
 add_executable(gps ${SRC})
 
+target_link_libraries(gps fusion_engine_client)
 ament_target_dependencies(gps rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs)
-
 
 install(TARGETS
   gps

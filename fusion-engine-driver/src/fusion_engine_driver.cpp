@@ -12,9 +12,6 @@
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "visualization_msgs/msg/marker.hpp"
 
-#include "atlas_message_listener.hpp"
-#include "atlas_message_event.hpp"
-#include "atlas_message_type.hpp"
 #include "fusion_engine_interface.hpp"
 
 /*
@@ -64,18 +61,18 @@ public:
   void receivedAtlasMessage(AtlasMessageEvent & evt) {
     auto time = now();
 
-    if(evt.message_type == AtlasMessageType::GPS_FIX) {
+    if(evt.message_type == FusionEngineMessageType::GPS_FIX) {
       evt.gps_fix.header.frame_id = frame_id_;
       evt.gps_fix.header.stamp = time;
       gps_fix_publisher_->publish(evt.gps_fix);
       publishNavFixMsg(evt.gps_fix);
     }
-    else if(evt.message_type == AtlasMessageType::IMU) {
+    else if(evt.message_type == FusionEngineMessageType::IMU) {
       evt.imu.header.frame_id = frame_id_;
       evt.imu.header.stamp = time;
       imu_publisher_->publish(evt.imu);
     }
-    else if (evt.message_type == AtlasMessageType::POSE) {
+    else if (evt.message_type == FusionEngineMessageType::POSE) {
       std::cout << "Point recover and published" << std::endl;
       visualization_msgs::msg::Marker points;
 
