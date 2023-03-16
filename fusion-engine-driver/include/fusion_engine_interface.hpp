@@ -26,12 +26,6 @@
 using namespace point_one::fusion_engine::messages;
 using namespace point_one::fusion_engine::messages::ros;
 
-namespace point_one {
-  namespace fusion_engine {
-    void messageReceived(const messages::MessageHeader&, const void*);
-  }
-}
-
 /*
  * Reads bit stream from the Point One Nav Atlas and notifies all event
  * listeners attached to this singelton object once a complete message has
@@ -41,18 +35,18 @@ class FusionEngineInterface : public AtlasByteFrameListener {
 
 public:
   /**
-   * Singleton object. Only one message parser is necessary.
-   */
-  static FusionEngineInterface & getInstance() {
-    static FusionEngineInterface instance; // static method fields are instatiated once
-    return instance;
-  }
-
-  /**
    * Initialize needed to set a ros envoronment for logging output.
    * @param node Link to ROS environment.
    * @return Nothing.
    */
+  FusionEngineInterface(std::function<void(AtlasMessageEvent & evt)> funcPublisher) :
+    framer(1024),
+    publisher(funcPublisher)
+    // recv(FusionEngineReceiver::getInstance())
+  {
+    // recv.addByteFrameListener(*this);
+    framer.SetMessageCallback(std::bind(&FusionEngineInterface::messageReceived, this, std::placeholders::_1, std::placeholders::_2));
+  }
   // void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port) {
   //   recv.initialize(node, udp_port, connection_type, tcp_ip, tcp_port);
   //   this->node_ = node;
@@ -61,22 +55,15 @@ public:
   void initialize(rclcpp::Node * node, std::string tcp_ip, int tcp_port) {
     this->node_ = node;
     data_listener_ = std::make_shared<TcpListener>(node_, tcp_ip, tcp_port);
+    data_listener_->setCallback(std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this, std::placeholders::_1, std::placeholders::_2));
     RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tcp in port %d", tcp_port);
   }
 
   void initialize(rclcpp::Node * node, int udp_port) {
     this->node_ = node;
     data_listener_ = std::make_shared<UdpListener>(node_, udp_port);
+    data_listener_->setCallback(std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this, std::placeholders::_1, std::placeholders::_2));
     RCLCPP_INFO(node_->get_logger(), "Initialize connection_type udp in port %d", udp_port);
-  }
-
-  /**
-   * Adds an event listener to be notified for every gps message received.
-   * @param listener object to be notified for gps message received.
-   * @return Nothing.
-   */
-  void addAtlasMessageListener(AtlasMessageListener & listener) {
-    listenerList.push_back(&listener);
   }
 
   /**
@@ -92,19 +79,19 @@ public:
       auto & contents = *reinterpret_cast<const GPSFixMessage*>(payload); 
       gps_msgs::msg::GPSFix gps_fix = AtlasUtils::toGPSFix(contents);
       AtlasMessageEvent evt(gps_fix);
-      fireAtlasMessageEvent(evt);
+      publisher(evt);
     } 
     else if(header.message_type == MessageType::ROS_IMU) {
       auto & contents = *reinterpret_cast<const IMUMessage*>(payload);
       AtlasMessageEvent evt( AtlasUtils::toImu(contents) );
-      fireAtlasMessageEvent(evt);
+      publisher(evt);
     }
     else if (header.message_type == MessageType::ROS_POSE) {
       auto & contents = *reinterpret_cast<const point_one::fusion_engine::messages::ros::PoseMessage*>(payload);
       
       geometry_msgs::msg::PoseStamped pos =  AtlasUtils::toPose(contents);
       AtlasMessageEvent evt(pos);
-      fireAtlasMessageEvent(evt);
+      publisher(evt);
     }
   }
 
@@ -119,6 +106,18 @@ public:
   }
 
   /**
+   * Notifies all AtlasByteFrameListeners of a newly recieved byte frame.
+   * @param frame Raw byte frame received.
+   * @param bytes_read Size of byte frame.
+   * @param frame_ip Frame source ip.
+   * @return Nothing.
+   */
+  void DecodeFusionEngineMessage(uint8_t * frame, size_t bytes_read) {
+    AtlasByteFrameEvent evt(frame, bytes_read);
+    this->receivedAtlasByteFrame(evt);
+  }
+
+  /**
    * Main service to receive gps data from Atlas.
    * @return Nothing.
    */
@@ -129,36 +128,10 @@ public:
 
 private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;
-  std::vector<AtlasMessageListener *> listenerList;
-  FusionEngineReceiver & recv;
+  std::function<void(AtlasMessageEvent & evt)> publisher;
+  // FusionEngineReceiver & recv;
   rclcpp::Node * node_;
   std::shared_ptr<DataListener> data_listener_;
-
-  /* only one instance will exist - singleton object. */
-  FusionEngineInterface() : framer(1024), recv(FusionEngineReceiver::getInstance()) {
-    recv.addByteFrameListener(*this);
-    framer.SetMessageCallback(point_one::fusion_engine::messageReceived);
-  }
-
-  /**
-   * Notifies all AtlasMessageListeners of a newly recieved gps message.
-   * @param evt data sent to listeners.
-   * @return Nothing.
-   */
-  void fireAtlasMessageEvent(AtlasMessageEvent evt) {
-    for(AtlasMessageListener * listener : listenerList) {
-      listener->receivedAtlasMessage(evt);
-    }
-  }
 };
-
-// annoying
-namespace point_one {
-  namespace fusion_engine {
-    void messageReceived(const messages::MessageHeader& header, const void* payload_in) {
-      FusionEngineInterface::getInstance().messageReceived(header, payload_in);
-    }
-  }
-}
 
 #endif

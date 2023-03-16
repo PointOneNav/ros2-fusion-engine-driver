@@ -15,27 +15,31 @@
 #include "atlas_message_listener.hpp"
 #include "atlas_message_event.hpp"
 #include "atlas_message_type.hpp"
-#include "atlas.hpp"
+#include "fusion_engine_interface.hpp"
 
 /*
  * Point One Nav Atlas Node publishes realtime GPSFix/IMU messages.
  */ 
-class FusionEngineInterfaceNode : public AtlasMessageListener, public rclcpp::Node {
+class FusionEngineInterfaceNode : public rclcpp::Node {
 public:
-  FusionEngineInterfaceNode() : Node("atlas_node"), gps(FusionEngineInterface::getInstance()) {
+  FusionEngineInterfaceNode() :
+    Node("atlas_node"),
+    gps(std::bind(&FusionEngineInterfaceNode::receivedAtlasMessage, this, std::placeholders::_1))
+  {
     this->declare_parameter("atlas_udp_port", 23456);
-    this->declare_parameter("atlas_connection_type", "udp");
+    this->declare_parameter("atlas_connection_type", "tcp");
     this->declare_parameter("atlas_tcp_ip", "localhost");
     this->declare_parameter("atlas_tcp_port", 12345);
     this->declare_parameter("frame_id", "");
     frame_id_ = this->get_parameter("frame_id").as_string();
+    frame_id_ = "";
     pose_publisher_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", rclcpp::SensorDataQoS());
     gps_fix_publisher_ = this->create_publisher<gps_msgs::msg::GPSFix>("gps_fix", rclcpp::SensorDataQoS());
     nav_fix_publisher_ = this->create_publisher<sensor_msgs::msg::NavSatFix>("fix", rclcpp::SensorDataQoS());
     imu_publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", rclcpp::SensorDataQoS());
     publisher_ = this->create_publisher<visualization_msgs::msg::Marker>("visualization_marker", 1);
     timer_ = create_wall_timer(std::chrono::milliseconds(1), std::bind(&FusionEngineInterfaceNode::serviceLoopCb, this));
-    
+
     if (this->has_parameter("atlas_connection_type")) {
       std::string argValue(this->get_parameter("atlas_connection_type").as_string());
       if (argValue == "tcp") {
@@ -47,16 +51,9 @@ public:
         this->get_parameter("atlas_udp_port").as_int());
       }
     } else {
-      // exit(84);
+      std::cout << "Invalid args" << std::endl;
+      rclcpp::shutdown();
     }
-    // gps.initialize(
-    //   this,
-    //   this->get_parameter("atlas_udp_port").as_int(),
-    //   this->get_parameter("atlas_connection_type").as_string(),
-    //   this->get_parameter("atlas_tcp_ip").as_string(),
-    //   this->get_parameter("atlas_tcp_port").as_int()
-    // );
-    gps.addAtlasMessageListener(*this);
   }
 
   /**
@@ -79,6 +76,7 @@ public:
       imu_publisher_->publish(evt.imu);
     }
     else if (evt.message_type == AtlasMessageType::POSE) {
+      std::cout << "Point recover and published" << std::endl;
       visualization_msgs::msg::Marker points;
 
       evt.pose.header.frame_id = frame_id_;
@@ -143,7 +141,7 @@ public:
   }
 
 private:
-  FusionEngineInterface & gps;
+  FusionEngineInterface gps;
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_publisher_;
   rclcpp::Publisher<gps_msgs::msg::GPSFix>::SharedPtr gps_fix_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
@@ -159,12 +157,14 @@ private:
    */
   void serviceLoopCb() {
     RCLCPP_INFO(this->get_logger(), "Service");
+    std::cout << "entered in service loop" << std::endl;
     timer_->cancel(); // one-time enrty into service loop
     gps.service();
   }
 };
 
-int main(int argc, char * argv[]) {
+int main(int argc, char * argv[])
+{
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<FusionEngineInterfaceNode>());
   rclcpp::shutdown();
