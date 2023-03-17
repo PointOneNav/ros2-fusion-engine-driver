@@ -13,14 +13,10 @@
 #include "std_msgs/msg/string.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "gps_msgs/msg/gps_fix.hpp"
-
 #include "tcp_listener.hpp"
 #include "udp_listener.hpp"
-
 #include "fusion_engine_utils.hpp"
 #include "fusion_engine_message_event.hpp"
-#include "fusion_engine_byte_frame_listener.hpp"
-#include "fusion_engine_byte_frame_event.hpp"
 #include "fusion_engine_receiver.hpp"
 
 using namespace point_one::fusion_engine::messages;
@@ -31,7 +27,7 @@ using namespace point_one::fusion_engine::messages::ros;
  * listeners attached to this singelton object once a complete message has
  * been received.
  */
-class FusionEngineInterface : public FusionEngineByteFrameListener {
+class FusionEngineInterface {
 
 public:
   /**
@@ -90,16 +86,6 @@ public:
   }
 
   /**
-   * Callback function for every new byte frame received from Atlas.
-   * @note Inherited from AtlasByteFrameListener interface.
-   * @param evt Wrapper that holds the byte frame data recieved.
-   * @return Nothing.
-   */
-  void receivedFusionEngineByteFrame(FusionEngineByteFrameEvent & evt) {
-    framer.OnData(evt.frame, evt.bytes_read);
-  }
-
-  /**
    * Notifies all AtlasByteFrameListeners of a newly recieved byte frame.
    * @param frame Raw byte frame received.
    * @param bytes_read Size of byte frame.
@@ -107,8 +93,7 @@ public:
    * @return Nothing.
    */
   void DecodeFusionEngineMessage(uint8_t * frame, size_t bytes_read) {
-    FusionEngineByteFrameEvent evt(frame, bytes_read);
-    this->receivedFusionEngineByteFrame(evt);
+    framer.OnData(frame, bytes_read);
   }
 
   /**

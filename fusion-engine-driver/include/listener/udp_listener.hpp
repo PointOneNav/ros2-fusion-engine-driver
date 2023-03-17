@@ -39,7 +39,7 @@ class UdpListener : public DataListener
             socklen_t addr_len = sizeof(their_addr);
             char their_ip[INET6_ADDRSTRLEN];
 
-            open(); 
+            open();
 
             try {
                 while(rclcpp::ok()) {
