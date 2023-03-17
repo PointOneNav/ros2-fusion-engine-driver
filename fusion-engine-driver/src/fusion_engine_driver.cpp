@@ -24,7 +24,7 @@ public:
     gps(std::bind(&FusionEngineInterfaceNode::receivedFusionEngineMessage, this, std::placeholders::_1))
   {
     this->declare_parameter("atlas_udp_port", 23456);
-    this->declare_parameter("atlas_connection_type", "tcp");
+    this->declare_parameter("atlas_connection_type", "tty");
     this->declare_parameter("atlas_tcp_ip", "localhost");
     this->declare_parameter("atlas_tcp_port", 12345);
     this->declare_parameter("frame_id", "");
@@ -39,6 +39,7 @@ public:
 
     if (this->has_parameter("atlas_connection_type")) {
       std::string argValue(this->get_parameter("atlas_connection_type").as_string());
+      std::cout << "argValue == " << argValue << std::endl;
       if (argValue == "tcp") {
         gps.initialize(this,
         this->get_parameter("atlas_tcp_ip").as_string(),
@@ -46,6 +47,8 @@ public:
       } else if (argValue == "udp") {
         gps.initialize(this,
         this->get_parameter("atlas_udp_port").as_int());
+      } else if (argValue == "tty") {
+        gps.initialize(this);
       }
     } else {
       std::cout << "Invalid args" << std::endl;

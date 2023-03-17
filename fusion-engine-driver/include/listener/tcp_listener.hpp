@@ -36,9 +36,7 @@ class TcpListener : public DataListener
             uint8_t buffer[1024];
             size_t total_bytes_read = 0;
 
-            std::cout << "TCP IS NOW LISTENING" << std::endl;
             open();
-
             try {
                 while(rclcpp::ok()) {
                     ssize_t bytes_read = recv(sock_, buffer, sizeof(buffer), 0);
