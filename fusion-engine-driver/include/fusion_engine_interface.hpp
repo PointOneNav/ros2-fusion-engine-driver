@@ -19,7 +19,7 @@
 
 #include "fusion_engine_utils.hpp"
 #include "atlas_message_listener.hpp"
-#include "atlas_message_event.hpp"
+#include "fusion_engine_message_event.hpp"
 #include "atlas_byte_frame_listener.hpp"
 #include "atlas_byte_frame_event.hpp"
 #include "fusion_engine_receiver.hpp"
@@ -40,7 +40,7 @@ public:
    * @param node Link to ROS environment.
    * @return Nothing.
    */
-  FusionEngineInterface(std::function<void(AtlasMessageEvent & evt)> funcPublisher) :
+  FusionEngineInterface(std::function<void(FusionEngineMessageEvent & evt)> funcPublisher) :
     framer(1024),
     publisher(funcPublisher)
     // recv(FusionEngineReceiver::getInstance())
@@ -79,19 +79,19 @@ public:
     if(header.message_type == MessageType::ROS_GPS_FIX) {
       auto & contents = *reinterpret_cast<const GPSFixMessage*>(payload); 
       gps_msgs::msg::GPSFix gps_fix = AtlasUtils::toGPSFix(contents);
-      AtlasMessageEvent evt(gps_fix);
+      FusionEngineMessageEvent evt(gps_fix);
       publisher(evt);
     } 
     else if(header.message_type == MessageType::ROS_IMU) {
       auto & contents = *reinterpret_cast<const IMUMessage*>(payload);
-      AtlasMessageEvent evt( AtlasUtils::toImu(contents) );
+      FusionEngineMessageEvent evt( AtlasUtils::toImu(contents) );
       publisher(evt);
     }
     else if (header.message_type == MessageType::ROS_POSE) {
       auto & contents = *reinterpret_cast<const point_one::fusion_engine::messages::ros::PoseMessage*>(payload);
       
       geometry_msgs::msg::PoseStamped pos =  AtlasUtils::toPose(contents);
-      AtlasMessageEvent evt(pos);
+      FusionEngineMessageEvent evt(pos);
       publisher(evt);
     }
   }
@@ -129,7 +129,7 @@ public:
 
 private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;
-  std::function<void(AtlasMessageEvent & evt)> publisher;
+  std::function<void(FusionEngineMessageEvent & evt)> publisher;
   // FusionEngineReceiver & recv;
   rclcpp::Node * node_;
   std::shared_ptr<DataListener> data_listener_;

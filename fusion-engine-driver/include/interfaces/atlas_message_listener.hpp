@@ -12,7 +12,7 @@
 //    * Triggers when atlas receives a complete message.
 //    * @param evt Event that wraps the message data received.
 //    */
-//   virtual void receivedAtlasMessage(AtlasMessageEvent & evt) = 0;
+//   virtual void receivedAtlasMessage(FusionEngineMessageEvent & evt) = 0;
 // };
 
 // #endif

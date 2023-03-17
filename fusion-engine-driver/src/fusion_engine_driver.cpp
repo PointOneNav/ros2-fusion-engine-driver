@@ -21,7 +21,7 @@ class FusionEngineInterfaceNode : public rclcpp::Node {
 public:
   FusionEngineInterfaceNode() :
     Node("atlas_node"),
-    gps(std::bind(&FusionEngineInterfaceNode::receivedAtlasMessage, this, std::placeholders::_1))
+    gps(std::bind(&FusionEngineInterfaceNode::receivedFusionEngineMessage, this, std::placeholders::_1))
   {
     this->declare_parameter("atlas_udp_port", 23456);
     this->declare_parameter("atlas_connection_type", "tcp");
@@ -58,7 +58,7 @@ public:
    * @param evt GPS/IMU data.
    * @return Nothing.
    */
-  void receivedAtlasMessage(AtlasMessageEvent & evt) {
+  void receivedFusionEngineMessage(FusionEngineMessageEvent & evt) {
     auto time = now();
 
     if(evt.message_type == FusionEngineMessageType::GPS_FIX) {
@@ -73,7 +73,6 @@ public:
       imu_publisher_->publish(evt.imu);
     }
     else if (evt.message_type == FusionEngineMessageType::POSE) {
-      std::cout << "Point recover and published" << std::endl;
       visualization_msgs::msg::Marker points;
 
       evt.pose.header.frame_id = frame_id_;
@@ -154,8 +153,7 @@ private:
    */
   void serviceLoopCb() {
     RCLCPP_INFO(this->get_logger(), "Service");
-    std::cout << "entered in service loop" << std::endl;
-    timer_->cancel(); // one-time enrty into service loop
+    timer_->cancel();
     gps.service();
   }
 };

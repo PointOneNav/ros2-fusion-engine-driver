@@ -11,20 +11,20 @@
 /**
  * Data class that wraps message data in a generic object.
  */
-class AtlasMessageEvent {
+class FusionEngineMessageEvent {
 public:
   gps_msgs::msg::GPSFix gps_fix;
   sensor_msgs::msg::Imu imu;
   geometry_msgs::msg::PoseStamped pose;
   FusionEngineMessageType message_type;
 
-  AtlasMessageEvent(geometry_msgs::msg::PoseStamped pose_)
+  FusionEngineMessageEvent(geometry_msgs::msg::PoseStamped pose_)
       : pose(pose_), message_type(FusionEngineMessageType::POSE) {}
 
-  AtlasMessageEvent(gps_msgs::msg::GPSFix gps_fix_) 
+  FusionEngineMessageEvent(gps_msgs::msg::GPSFix gps_fix_) 
       : gps_fix(gps_fix_), message_type(FusionEngineMessageType::GPS_FIX) {}
 
-  AtlasMessageEvent(sensor_msgs::msg::Imu imu_)     
+  FusionEngineMessageEvent(sensor_msgs::msg::Imu imu_)     
       : imu(imu_), message_type(FusionEngineMessageType::IMU) {}
 
 };
