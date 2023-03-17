@@ -18,10 +18,9 @@
 #include "udp_listener.hpp"
 
 #include "fusion_engine_utils.hpp"
-#include "atlas_message_listener.hpp"
 #include "fusion_engine_message_event.hpp"
-#include "atlas_byte_frame_listener.hpp"
-#include "atlas_byte_frame_event.hpp"
+#include "fusion_engine_byte_frame_listener.hpp"
+#include "fusion_engine_byte_frame_event.hpp"
 #include "fusion_engine_receiver.hpp"
 
 using namespace point_one::fusion_engine::messages;
@@ -32,7 +31,7 @@ using namespace point_one::fusion_engine::messages::ros;
  * listeners attached to this singelton object once a complete message has
  * been received.
  */
-class FusionEngineInterface : public AtlasByteFrameListener {
+class FusionEngineInterface : public FusionEngineByteFrameListener {
 
 public:
   /**
@@ -43,15 +42,9 @@ public:
   FusionEngineInterface(std::function<void(FusionEngineMessageEvent & evt)> funcPublisher) :
     framer(1024),
     publisher(funcPublisher)
-    // recv(FusionEngineReceiver::getInstance())
   {
-    // recv.addByteFrameListener(*this);
     framer.SetMessageCallback(std::bind(&FusionEngineInterface::messageReceived, this, std::placeholders::_1, std::placeholders::_2));
   }
-  // void initialize(rclcpp::Node * node, int udp_port, std::string connection_type, std::string tcp_ip, int tcp_port) {
-  //   recv.initialize(node, udp_port, connection_type, tcp_ip, tcp_port);
-  //   this->node_ = node;
-  // }
 
   void initialize(rclcpp::Node * node, std::string tcp_ip, int tcp_port) {
     this->node_ = node;
@@ -102,7 +95,7 @@ public:
    * @param evt Wrapper that holds the byte frame data recieved.
    * @return Nothing.
    */
-  void receivedAtlasByteFrame(AtlasByteFrameEvent & evt) {
+  void receivedFusionEngineByteFrame(FusionEngineByteFrameEvent & evt) {
     framer.OnData(evt.frame, evt.bytes_read);
   }
 
@@ -114,8 +107,8 @@ public:
    * @return Nothing.
    */
   void DecodeFusionEngineMessage(uint8_t * frame, size_t bytes_read) {
-    AtlasByteFrameEvent evt(frame, bytes_read);
-    this->receivedAtlasByteFrame(evt);
+    FusionEngineByteFrameEvent evt(frame, bytes_read);
+    this->receivedFusionEngineByteFrame(evt);
   }
 
   /**
@@ -130,7 +123,6 @@ public:
 private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;
   std::function<void(FusionEngineMessageEvent & evt)> publisher;
-  // FusionEngineReceiver & recv;
   rclcpp::Node * node_;
   std::shared_ptr<DataListener> data_listener_;
 };
