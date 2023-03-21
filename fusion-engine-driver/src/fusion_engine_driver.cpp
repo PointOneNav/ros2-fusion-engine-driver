@@ -21,7 +21,7 @@ class FusionEngineInterfaceNode : public rclcpp::Node {
 public:
   FusionEngineInterfaceNode() :
     Node("atlas_node"),
-    gps(std::bind(&FusionEngineInterfaceNode::receivedFusionEngineMessage, this, std::placeholders::_1))
+    gps(std::bind(&FusionEngineInterfaceNode::receivedFusionEngineMessage, this, std::placeholders::_1, std::placeholders::_2))
   {
     this->declare_parameter("atlas_udp_port", 23456);
     this->declare_parameter("atlas_connection_type", "tty");
@@ -60,21 +60,30 @@ public:
    * @param evt GPS/IMU data.
    * @return Nothing.
    */
-  void receivedFusionEngineMessage(FusionEngineMessageEvent & evt) {
+  void receivedFusionEngineMessage(const MessageHeader & header, const void * payload) {
     auto time = now();
 
-    if(evt.type_ == MessageType::ROS_GPS_FIX) {
+    if(header.message_type == MessageType::ROS_GPS_FIX) {
+      auto & contents = *reinterpret_cast<const GPSFixMessage*>(payload); 
+      gps_msgs::msg::GPSFix gps_fix = ConversionUtils::toGPSFix(contents);
+      FusionEngineMessageEvent evt(gps_fix, header.message_type);
       evt.gps_fix_.header.frame_id = frame_id_;
       evt.gps_fix_.header.stamp = time;
       gps_fix_publisher_->publish(evt.gps_fix_);
       publishNavFixMsg(evt.gps_fix_);
-    }
-    else if(evt.type_ == MessageType::ROS_IMU) {
+    } 
+    else if(header.message_type == MessageType::ROS_IMU) {
+      auto & contents = *reinterpret_cast<const IMUMessage*>(payload);
+      FusionEngineMessageEvent evt(ConversionUtils::toImu(contents), header.message_type);
       evt.imu_.header.frame_id = frame_id_;
       evt.imu_.header.stamp = time;
       imu_publisher_->publish(evt.imu_);
     }
-    else if (evt.type_ == MessageType::ROS_POSE) {
+    else if (header.message_type == MessageType::ROS_POSE) {
+      auto & contents = *reinterpret_cast<const point_one::fusion_engine::messages::ros::PoseMessage*>(payload);
+      
+      geometry_msgs::msg::PoseStamped pos = ConversionUtils::toPose(contents);
+      FusionEngineMessageEvent evt(pos, header.message_type);
       visualization_msgs::msg::Marker points;
 
       evt.pose_.header.frame_id = frame_id_;

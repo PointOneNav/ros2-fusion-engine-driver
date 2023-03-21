@@ -35,7 +35,7 @@ public:
    * @param node Link to ROS environment.
    * @return Nothing.
    */
-  FusionEngineInterface(std::function<void(FusionEngineMessageEvent & evt)> funcPublisher) :
+  FusionEngineInterface(std::function<void(const MessageHeader & header, const void * payload_in)> funcPublisher) :
     framer(1024),
     publisher(funcPublisher)
   {
@@ -72,24 +72,7 @@ public:
   void messageReceived(const MessageHeader & header, const void * payload_in) {
     auto payload = static_cast<const uint8_t*>(payload_in);
 
-    if(header.message_type == MessageType::ROS_GPS_FIX) {
-      auto & contents = *reinterpret_cast<const GPSFixMessage*>(payload); 
-      gps_msgs::msg::GPSFix gps_fix = ConversionUtils::toGPSFix(contents);
-      FusionEngineMessageEvent evt(gps_fix, header.message_type);
-      publisher(evt);
-    } 
-    else if(header.message_type == MessageType::ROS_IMU) {
-      auto & contents = *reinterpret_cast<const IMUMessage*>(payload);
-      FusionEngineMessageEvent evt(ConversionUtils::toImu(contents), header.message_type);
-      publisher(evt);
-    }
-    else if (header.message_type == MessageType::ROS_POSE) {
-      auto & contents = *reinterpret_cast<const point_one::fusion_engine::messages::ros::PoseMessage*>(payload);
-      
-      geometry_msgs::msg::PoseStamped pos = ConversionUtils::toPose(contents);
-      FusionEngineMessageEvent evt(pos, header.message_type);
-      publisher(evt);
-    }
+    publisher(header, payload);
   }
 
   /**
@@ -114,7 +97,7 @@ public:
 
 private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;
-  std::function<void(FusionEngineMessageEvent & evt)> publisher;
+  std::function<void(const MessageHeader & header, const void * payload_in)> publisher;
   rclcpp::Node * node_;
   std::shared_ptr<DataListener> data_listener_;
 };
