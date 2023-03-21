@@ -42,6 +42,7 @@ include_directories(./include/interfaces)
 set(SRC
     ${SOURCE}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/fusion_engine_driver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/serial_port_reader.cpp
     )
 
 add_executable(gps ${SRC})
