@@ -40,12 +40,9 @@ public:
     if (this->has_parameter("atlas_connection_type")) {
       std::string argValue(this->get_parameter("atlas_connection_type").as_string());
       if (argValue == "tcp") {
-        gps.initialize(this,
-        this->get_parameter("atlas_tcp_ip").as_string(),
-        this->get_parameter("atlas_tcp_port").as_int());
+        gps.initialize(this, this->get_parameter("atlas_tcp_ip").as_string(), this->get_parameter("atlas_tcp_port").as_int());
       } else if (argValue == "udp") {
-        gps.initialize(this,
-        this->get_parameter("atlas_udp_port").as_int());
+        gps.initialize(this, this->get_parameter("atlas_udp_port").as_int());
       } else if (argValue == "tty") {
         gps.initialize(this);
       }
