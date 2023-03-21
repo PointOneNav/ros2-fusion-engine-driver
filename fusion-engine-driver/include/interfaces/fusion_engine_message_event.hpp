@@ -4,7 +4,6 @@
 #include "gps_msgs/msg/gps_fix.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
-#include "fusion_engine_message_type.hpp"
 
 #include <point_one/fusion_engine/messages/ros.h>
 
