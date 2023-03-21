@@ -23,7 +23,7 @@ class UdpListener : public DataListener
             port_(port)
         {
 
-        };
+        }
         ~UdpListener() = default;
 
         void setCallback(const std::function<void(uint8_t*, size_t)>&func)
@@ -61,7 +61,7 @@ class UdpListener : public DataListener
             } catch(std::exception const & ex) {
                 RCLCPP_ERROR_STREAM(node_->get_logger(), "Decoder exception: " << ex.what());
             }
-        };
+        }
 
     private:
 

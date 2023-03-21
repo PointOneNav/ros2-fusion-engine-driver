@@ -28,7 +28,7 @@ public:
         tcgetattr(_serialPort, &tty);
         cfmakeraw(&tty);
         tcsetattr(_serialPort, TCSANOW, &tty);
-    };
+    }
 
     uint8_t portRead(ssize_t n, uint8_t *buffer)
     {
@@ -38,7 +38,7 @@ public:
     ~portReader()
     {
         close(_serialPort);
-    };
+    }
 };
 
 #endif

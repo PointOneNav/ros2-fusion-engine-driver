@@ -11,7 +11,7 @@ class TtyListener : public DataListener
         TtyListener(rclcpp::Node* node) :
             node_(node)
         {
-        };
+        }
 
         ~TtyListener() = default;
 
@@ -39,14 +39,14 @@ class TtyListener : public DataListener
                 callback_function_(buffer, bytes_read);
             }
             p.~portReader();
-        };
+        }
 
     private:
 
         int open()
         {
             return 0;
-        };
+        }
 
         rclcpp::Node * node_;
         std::string _ip;

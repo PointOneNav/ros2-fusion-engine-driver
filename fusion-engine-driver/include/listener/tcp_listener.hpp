@@ -22,7 +22,7 @@ class TcpListener : public DataListener
             _ip(ip),
             _port(port)
         {
-        };
+        }
 
         ~TcpListener() = default;
 
@@ -54,7 +54,7 @@ class TcpListener : public DataListener
             } catch(std::exception const & ex) {
                 RCLCPP_ERROR_STREAM(node_->get_logger(), "Decoder exception: " << ex.what());
             }
-        };
+        }
 
     private:
 
@@ -83,7 +83,7 @@ class TcpListener : public DataListener
             }
             RCLCPP_INFO(node_->get_logger(), "Opened port %d at ip %s", _port, _ip.c_str());
             return 0;
-        };
+        }
 
         rclcpp::Node * node_;
         std::string _ip;
