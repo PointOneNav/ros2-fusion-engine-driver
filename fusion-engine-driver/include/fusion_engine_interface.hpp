@@ -16,9 +16,8 @@
 #include "tcp_listener.hpp"
 #include "udp_listener.hpp"
 #include "tty_listner.hpp"
-#include "fusion_engine_utils.hpp"
+#include "conversion_utils.hpp"
 #include "fusion_engine_message_event.hpp"
-#include "fusion_engine_receiver.hpp"
 
 using namespace point_one::fusion_engine::messages;
 using namespace point_one::fusion_engine::messages::ros;
@@ -75,19 +74,19 @@ public:
 
     if(header.message_type == MessageType::ROS_GPS_FIX) {
       auto & contents = *reinterpret_cast<const GPSFixMessage*>(payload); 
-      gps_msgs::msg::GPSFix gps_fix = AtlasUtils::toGPSFix(contents);
+      gps_msgs::msg::GPSFix gps_fix = ConversionUtils::toGPSFix(contents);
       FusionEngineMessageEvent evt(gps_fix);
       publisher(evt);
     } 
     else if(header.message_type == MessageType::ROS_IMU) {
       auto & contents = *reinterpret_cast<const IMUMessage*>(payload);
-      FusionEngineMessageEvent evt( AtlasUtils::toImu(contents) );
+      FusionEngineMessageEvent evt( ConversionUtils::toImu(contents) );
       publisher(evt);
     }
     else if (header.message_type == MessageType::ROS_POSE) {
       auto & contents = *reinterpret_cast<const point_one::fusion_engine::messages::ros::PoseMessage*>(payload);
       
-      geometry_msgs::msg::PoseStamped pos =  AtlasUtils::toPose(contents);
+      geometry_msgs::msg::PoseStamped pos = ConversionUtils::toPose(contents);
       FusionEngineMessageEvent evt(pos);
       publisher(evt);
     }

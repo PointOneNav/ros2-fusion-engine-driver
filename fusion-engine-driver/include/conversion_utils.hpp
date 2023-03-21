@@ -17,7 +17,7 @@
 
 #include <point_one/fusion_engine/messages/ros.h>
 
-class AtlasUtils {
+class ConversionUtils {
 public:
   /**
    * Helper method to translate atlas GPSFixMessage to ROS standard GPSFix.

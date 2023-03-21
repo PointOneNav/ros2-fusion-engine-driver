@@ -16,16 +16,16 @@ public:
   gps_msgs::msg::GPSFix gps_fix;
   sensor_msgs::msg::Imu imu;
   geometry_msgs::msg::PoseStamped pose;
-  FusionEngineMessageType message_type;
+  size_t typeId;
 
   FusionEngineMessageEvent(geometry_msgs::msg::PoseStamped pose_)
-      : pose(pose_), message_type(FusionEngineMessageType::POSE) {}
+      : pose(pose_), typeId(typeid(pose_).hash_code()) {}
 
   FusionEngineMessageEvent(gps_msgs::msg::GPSFix gps_fix_) 
-      : gps_fix(gps_fix_), message_type(FusionEngineMessageType::GPS_FIX) {}
+      : gps_fix(gps_fix_), typeId(typeid(gps_fix_).hash_code()) {}
 
   FusionEngineMessageEvent(sensor_msgs::msg::Imu imu_)     
-      : imu(imu_), message_type(FusionEngineMessageType::IMU) {}
+      : imu(imu_), typeId(typeid(imu_).hash_code()) {}
 
 };
 

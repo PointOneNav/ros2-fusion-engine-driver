@@ -39,7 +39,6 @@ public:
 
     if (this->has_parameter("atlas_connection_type")) {
       std::string argValue(this->get_parameter("atlas_connection_type").as_string());
-      std::cout << "argValue == " << argValue << std::endl;
       if (argValue == "tcp") {
         gps.initialize(this,
         this->get_parameter("atlas_tcp_ip").as_string(),
@@ -64,18 +63,18 @@ public:
   void receivedFusionEngineMessage(FusionEngineMessageEvent & evt) {
     auto time = now();
 
-    if(evt.message_type == FusionEngineMessageType::GPS_FIX) {
+    if(evt.typeId == typeid(gps_msgs::msg::GPSFix).hash_code()) {
       evt.gps_fix.header.frame_id = frame_id_;
       evt.gps_fix.header.stamp = time;
       gps_fix_publisher_->publish(evt.gps_fix);
       publishNavFixMsg(evt.gps_fix);
     }
-    else if(evt.message_type == FusionEngineMessageType::IMU) {
+    else if(evt.typeId == typeid(sensor_msgs::msg::Imu).hash_code()) {
       evt.imu.header.frame_id = frame_id_;
       evt.imu.header.stamp = time;
       imu_publisher_->publish(evt.imu);
     }
-    else if (evt.message_type == FusionEngineMessageType::POSE) {
+    else if (evt.typeId == typeid(geometry_msgs::msg::PoseStamped).hash_code()) {
       visualization_msgs::msg::Marker points;
 
       evt.pose.header.frame_id = frame_id_;
