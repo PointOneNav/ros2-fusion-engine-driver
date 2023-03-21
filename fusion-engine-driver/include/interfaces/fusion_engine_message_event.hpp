@@ -7,24 +7,27 @@
 
 #include <point_one/fusion_engine/messages/ros.h>
 
+using namespace point_one::fusion_engine::messages;
+using namespace point_one::fusion_engine::messages::ros;
+
 /**
  * Data class that wraps message data in a generic object.
  */
 class FusionEngineMessageEvent {
 public:
-  gps_msgs::msg::GPSFix gps_fix;
-  sensor_msgs::msg::Imu imu;
-  geometry_msgs::msg::PoseStamped pose;
-  size_t typeId;
+  gps_msgs::msg::GPSFix gps_fix_;
+  sensor_msgs::msg::Imu imu_;
+  geometry_msgs::msg::PoseStamped pose_;
+  MessageType type_;
 
-  FusionEngineMessageEvent(geometry_msgs::msg::PoseStamped pose_)
-      : pose(pose_), typeId(typeid(pose_).hash_code()) {}
+  FusionEngineMessageEvent(geometry_msgs::msg::PoseStamped pose, const MessageType &type)
+      : pose_(pose), type_(type) {}
 
-  FusionEngineMessageEvent(gps_msgs::msg::GPSFix gps_fix_) 
-      : gps_fix(gps_fix_), typeId(typeid(gps_fix_).hash_code()) {}
+  FusionEngineMessageEvent(gps_msgs::msg::GPSFix gps_fix, const MessageType &type) 
+      : gps_fix_(gps_fix), type_(type) {}
 
-  FusionEngineMessageEvent(sensor_msgs::msg::Imu imu_)     
-      : imu(imu_), typeId(typeid(imu_).hash_code()) {}
+  FusionEngineMessageEvent(sensor_msgs::msg::Imu imu, const MessageType &type)
+      : imu_(imu), type_(type) {}
 
 };
 

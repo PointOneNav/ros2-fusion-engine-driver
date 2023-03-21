@@ -63,23 +63,23 @@ public:
   void receivedFusionEngineMessage(FusionEngineMessageEvent & evt) {
     auto time = now();
 
-    if(evt.typeId == typeid(gps_msgs::msg::GPSFix).hash_code()) {
-      evt.gps_fix.header.frame_id = frame_id_;
-      evt.gps_fix.header.stamp = time;
-      gps_fix_publisher_->publish(evt.gps_fix);
-      publishNavFixMsg(evt.gps_fix);
+    if(evt.type_ == MessageType::ROS_GPS_FIX) {
+      evt.gps_fix_.header.frame_id = frame_id_;
+      evt.gps_fix_.header.stamp = time;
+      gps_fix_publisher_->publish(evt.gps_fix_);
+      publishNavFixMsg(evt.gps_fix_);
     }
-    else if(evt.typeId == typeid(sensor_msgs::msg::Imu).hash_code()) {
-      evt.imu.header.frame_id = frame_id_;
-      evt.imu.header.stamp = time;
-      imu_publisher_->publish(evt.imu);
+    else if(evt.type_ == MessageType::ROS_IMU) {
+      evt.imu_.header.frame_id = frame_id_;
+      evt.imu_.header.stamp = time;
+      imu_publisher_->publish(evt.imu_);
     }
-    else if (evt.typeId == typeid(geometry_msgs::msg::PoseStamped).hash_code()) {
+    else if (evt.type_ == MessageType::ROS_POSE) {
       visualization_msgs::msg::Marker points;
 
-      evt.pose.header.frame_id = frame_id_;
-      evt.pose.header.stamp = time;
-      pose_publisher_->publish(evt.pose);
+      evt.pose_.header.frame_id = frame_id_;
+      evt.pose_.header.stamp = time;
+      pose_publisher_->publish(evt.pose_);
       points.header.frame_id = "/my_frame";
       points.header.stamp = this->now();
       points.ns = "basic_shapes";
@@ -92,9 +92,9 @@ public:
       points.color.g = 1.0f;
       points.color.a = 1.0;
       geometry_msgs::msg::Point p;
-      p.x = evt.pose.pose.position.x;
-      p.y = evt.pose.pose.position.y;
-      p.z = evt.pose.pose.position.z;
+      p.x = evt.pose_.pose.position.x;
+      p.y = evt.pose_.pose.position.y;
+      p.z = evt.pose_.pose.position.z;
 
       points.points.push_back(p);
       while (publisher_->get_subscription_count() < 1)

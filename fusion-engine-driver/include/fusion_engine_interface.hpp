@@ -75,19 +75,19 @@ public:
     if(header.message_type == MessageType::ROS_GPS_FIX) {
       auto & contents = *reinterpret_cast<const GPSFixMessage*>(payload); 
       gps_msgs::msg::GPSFix gps_fix = ConversionUtils::toGPSFix(contents);
-      FusionEngineMessageEvent evt(gps_fix);
+      FusionEngineMessageEvent evt(gps_fix, header.message_type);
       publisher(evt);
     } 
     else if(header.message_type == MessageType::ROS_IMU) {
       auto & contents = *reinterpret_cast<const IMUMessage*>(payload);
-      FusionEngineMessageEvent evt( ConversionUtils::toImu(contents) );
+      FusionEngineMessageEvent evt(ConversionUtils::toImu(contents), header.message_type);
       publisher(evt);
     }
     else if (header.message_type == MessageType::ROS_POSE) {
       auto & contents = *reinterpret_cast<const point_one::fusion_engine::messages::ros::PoseMessage*>(payload);
       
       geometry_msgs::msg::PoseStamped pos = ConversionUtils::toPose(contents);
-      FusionEngineMessageEvent evt(pos);
+      FusionEngineMessageEvent evt(pos, header.message_type);
       publisher(evt);
     }
   }

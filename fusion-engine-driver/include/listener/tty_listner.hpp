@@ -24,7 +24,7 @@ class TtyListener : public DataListener
         {
             uint8_t buffer[1024];
             size_t total_bytes_read = 0;
-            portReader p("/dev/ttyUSB1");
+            SerialPortReader p("/dev/ttyUSB1");
 
             while(rclcpp::ok()) {
                 ssize_t bytes_read = p.portRead(1024, &buffer[0]);
@@ -38,7 +38,7 @@ class TtyListener : public DataListener
                 total_bytes_read += bytes_read;
                 callback_function_(buffer, bytes_read);
             }
-            p.~portReader();
+            p.~SerialPortReader();
         }
 
     private:

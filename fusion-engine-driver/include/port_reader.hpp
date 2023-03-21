@@ -10,7 +10,7 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <errno.h> // Error integer and strerror() function
 
-class portReader
+class SerialPortReader
 {
 private:
     std::string _port;
@@ -18,7 +18,7 @@ private:
     termios tty;
 
 public:
-    portReader(std::string const& port) :
+    SerialPortReader(std::string const& port) :
         _port(port)
     {
         _serialPort = open(_port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
@@ -35,7 +35,7 @@ public:
         return read(_serialPort, buffer, n);
     }
 
-    ~portReader()
+    ~SerialPortReader()
     {
         close(_serialPort);
     }
