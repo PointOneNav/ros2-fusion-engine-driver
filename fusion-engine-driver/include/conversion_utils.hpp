@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2023
-** ros2-fusion-engine-driver
-** File description:
-** fusion_engine_utils
-*/
-
 #ifndef FUSION_ENGINE_UTILS_HPP_
 #define FUSION_ENGINE_UTILS_HPP_
 

@@ -8,8 +8,9 @@
 class TtyListener : public DataListener
 {
     public:
-        TtyListener(rclcpp::Node* node) :
-            node_(node)
+        TtyListener(rclcpp::Node* node, const std::string &port) :
+            node_(node),
+            port_(port)
         {
         }
 
@@ -24,7 +25,7 @@ class TtyListener : public DataListener
         {
             uint8_t buffer[1024];
             size_t total_bytes_read = 0;
-            SerialPortReader p("/dev/ttyUSB1");
+            SerialPortReader p(port_);
 
             while(rclcpp::ok()) {
                 ssize_t bytes_read = p.portRead(1024, &buffer[0]);
@@ -49,9 +50,7 @@ class TtyListener : public DataListener
         }
 
         rclcpp::Node * node_;
-        std::string _ip;
-        int _port;
-        int sock_ = 0;
+        std::string port_;
         std::function<void(uint8_t*, size_t)> callback_function_;
 };
 

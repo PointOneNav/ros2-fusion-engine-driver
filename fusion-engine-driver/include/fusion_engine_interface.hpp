@@ -15,7 +15,7 @@
 #include "gps_msgs/msg/gps_fix.hpp"
 #include "tcp_listener.hpp"
 #include "udp_listener.hpp"
-#include "tty_listner.hpp"
+#include "tty_listener.hpp"
 #include "conversion_utils.hpp"
 #include "fusion_engine_message_event.hpp"
 
@@ -58,7 +58,7 @@ public:
 
   void initialize(rclcpp::Node * node) {
     this->node_ = node;
-    data_listener_ = std::make_shared<TtyListener>(node_);
+    data_listener_ = std::make_shared<TtyListener>(node_, "/dev/ttyUSB1");
     data_listener_->setCallback(std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this, std::placeholders::_1, std::placeholders::_2));
     RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tty");
   }
