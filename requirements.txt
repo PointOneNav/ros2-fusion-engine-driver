@@ -1,0 +1,4 @@
+
+catkin==0.8.10
+catkin-pkg==0.5.2
+catkin-pkg-modules==0.5.2
