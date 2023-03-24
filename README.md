@@ -75,31 +75,12 @@ $ ros2 run fusion-engine-driver gps
 $ rviz2
 ```
 
-Once on rviz you will need to go to the File > Open config tab at the top of the page.
+Initially when you open rviz for the first time you will see this screen:
+
+![Screenshot](./docs/images/basic_rviz_without_config.png)
+
+When you're on rviz you will need to go to the File > Open config tab at the top of the page.
 And you will need to go to the rviz2_config folder in the repository and select the file from there.
+Once you have added the configuration you will have this screen:
 
-
-<!-- Side information: To use the application in a special environment use ```lorem ipsum``` to start -->
-<!-- ## Collaboration
-***
-Give instructions on how to collaborate with your project.
-> Maybe you want to write a quote in this part. 
-> It should go over several rows?
-> This is how you do it. -->
-<!-- 
-## FAQs
-***
-A list of frequently asked questions
-1. **This is a question in bold**
-Answer of the first question with _italic words_. 
-2. __Second question in bold__ 
-To answer this question we use an unordered list:
-* First point
-* Second Point
-* Third point
-3. **Third question in bold**
-Answer of the third question with *italic words*.
-4. **Fourth question in bold**
-| Headline 1 in the tablehead | Headline 2 in the tablehead | Headline 3 in the tablehead |
-|:--------------|:-------------:|--------------:|
-| text-align left | text-align center | text-align right | -->
+![Screenshot](./docs/images/rviz_window_with_config.png)

@@ -21,3 +21,4 @@ class SerialPortReader {
 
   uint8_t portRead(ssize_t n, uint8_t* buffer);
 };
+
