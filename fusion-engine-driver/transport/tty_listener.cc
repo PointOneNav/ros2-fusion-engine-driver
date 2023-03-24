@@ -1,12 +1,15 @@
 #include "tty_listener.hpp"
 
+/******************************************************************************/
 TtyListener::TtyListener(rclcpp::Node* node, const std::string& port)
     : node_(node), port_(port) {}
 
+/******************************************************************************/
 void TtyListener::setCallback(const std::function<void(uint8_t*, size_t)>& func) {
   callback_function_ = func;
 }
 
+/******************************************************************************/
 void TtyListener::listen() {
   uint8_t buffer[1024];
   size_t total_bytes_read = 0;

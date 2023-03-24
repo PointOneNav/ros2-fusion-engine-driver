@@ -1,13 +1,16 @@
 #include "udp_listener.hpp"
 
+/******************************************************************************/
 UdpListener::UdpListener(rclcpp::Node *node, const int &port)
     : node_(node), port_(port) {}
 
+/******************************************************************************/
 void UdpListener::setCallback(
     const std::function<void(uint8_t *, size_t)> &func) {
   callback_function_ = func;
 }
 
+/******************************************************************************/
 void UdpListener::listen() {
   uint8_t buffer[1024];
   size_t total_bytes_read = 0;
@@ -43,6 +46,7 @@ void UdpListener::listen() {
   }
 }
 
+/******************************************************************************/
 int UdpListener::open() {
   sock_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (sock_ < 0) {
@@ -63,6 +67,7 @@ int UdpListener::open() {
   return 0;
 }
 
+/******************************************************************************/
 void *UdpListener::getInAddr(struct sockaddr *sa) {
   if (sa->sa_family == AF_INET) {
     return &(((struct sockaddr_in *)sa)->sin_addr);
