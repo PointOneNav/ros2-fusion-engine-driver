@@ -23,15 +23,8 @@ A list of technologies used within the project:
 
 ## Installation
 ***
-In order to install the project you will need to install others technologies.
-You will first need to install [Quectel](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf).
-Finally, you will also need [ROS 2](https://docs.ros.org/en/humble/Installation.html).
 
-Once these installations are done, you will have to do these actions on 3 different terminals.
-
-* Terminal 1.
-
-In /fusion-engine-client/python folder:
+The first time you use ros2 with the gps you may not get any messages you need to set the gps for specific message types. To do this after launching the virtual environment you will need to go in the folder p1_runner/bin to make the following control. This step is necessary for enabled ROS messages in FusionEngine.
 
 ```
 $ python3 -m venv venv
@@ -39,11 +32,30 @@ $ source venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
+```
+$ config_tool.py apply uart2_message_rate fe ROSPoseMessage 100ms
+$ config_tool.py apply uart2_message_rate fe ROSGPSFixMessage 100ms
+$ config_tool.py apply uart2_message_rate fe ROSIMUMessage 100ms
+$ config_tool.py save
+```
+Once you have activated the ros messages. You will install the node.
+
+```
+$ mkdir ros-fusion-engine
+$ git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git ros-fusion-engine
+$ cd ros-fusion-engine
+$ sudo apt-get install ros-humble-gps-msgs
+$ rosdep install -i --from-path ./ --rosdistro foxy -y
+$ colcon build --packages-select fusion-engine-driver                                                            
+$ . install/local_setup.bash                                                                                   
+```
+
 ## Usage
+***
 
 Now that you have installed the node and it is ready for use here is how to use it.
 You have 3 different modes to use it. At first you will have to fill in the type of connection to launch the program.
-The three types are as follows (tcp, udp, tty). These three types have different parameters, they are the following.
+The three types are as follows (tcp, udp, serial). These three types have different parameters, they are the following.
 
 * TCP
 
@@ -71,10 +83,10 @@ $ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connectio
 
 In this case, these arguments are optional, in fact there are default values (12345).
 
-* TTY
+* serial
 
-To launch in tty you will need its port. 
-Here is an example to launch in tty.
+To launch in serial you will need its port. 
+Here is an example to launch in serial.
 
 ```
 $ colcon build --packages-select fusion-engine-driver                                                            
@@ -86,37 +98,17 @@ In this case, these arguments are optional, in fact there are default values (/d
 
 ## Annexes
 
+Once these installations are done, you will have to do these actions on 3 different terminals.
 
-The first time you use ros2 with the gps you may not get any messages you need to set the gps for specific message types. To do this after launching the virtual environment you will need to go in the folder quectel_runner/bin to make the following control. 
-
-```
-$ config_tool.py apply uart2_message_rate fe ROSPoseMessage 100ms
-$ config_tool.py apply uart2_message_rate fe ROSGPSFixMessage 100ms
-$ config_tool.py apply uart2_message_rate fe ROSIMUMessage 100ms
-$ config_tool.py save
-```
-
-After these commands you should go to the quectel_runner folder:
+Tcp mode require more than just turning on the card.
+For using tcp, you should go to the p1_runner folder, and doing this actions:
 
 ```
 $ pip install -r requirements.txt
 $ python3 -m quectel_runner --device-id [YOUR ID] --polaris [YOUR KEY]  -v  --tcp 12345 --output-type=all
 ```
 
-On this first terminal you must launch the gps on port 12345.
-
-* Terminal 2.
-
-```
-$ mkdir ros-fusion-engine
-$ git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git ros-fusion-engine
-$ cd ros-fusion-engine
-$ colcon build --packages-select fusion-engine-driver                                                            
-$ . install/local_setup.bash                                                                                   
-$ ros2 run fusion-engine-driver gps
-```
-
-* Terminal 3.
+Now that you can retrieve the fusion engine information in ros, you have the possibility to display it in rviz by performing these actions:
 
 ```
 $ rviz2
