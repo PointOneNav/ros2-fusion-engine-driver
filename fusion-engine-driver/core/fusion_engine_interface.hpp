@@ -35,34 +35,11 @@ class FusionEngineInterface {
       std::function<void(const MessageHeader& header, const void* payload_in)>
           funcPublisher);
 
-  void initialize(rclcpp::Node* node, std::string tcp_ip, int tcp_port) {
-    this->node_ = node;
-    data_listener_ = std::make_shared<TcpListener>(node_, tcp_ip, tcp_port);
-    data_listener_->setCallback(
-        std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
-                  std::placeholders::_1, std::placeholders::_2));
-    RCLCPP_INFO(node_->get_logger(),
-                "Initialize connection_type tcp in port %d", tcp_port);
-  }
+  void initialize(rclcpp::Node* node, std::string tcp_ip, int tcp_port);
 
-  void initialize(rclcpp::Node* node, int udp_port) {
-    this->node_ = node;
-    data_listener_ = std::make_shared<UdpListener>(node_, udp_port);
-    data_listener_->setCallback(
-        std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
-                  std::placeholders::_1, std::placeholders::_2));
-    RCLCPP_INFO(node_->get_logger(),
-                "Initialize connection_type udp in port %d", udp_port);
-  }
+  void initialize(rclcpp::Node* node, int udp_port);
 
-  void initialize(rclcpp::Node* node) {
-    this->node_ = node;
-    data_listener_ = std::make_shared<TtyListener>(node_, "/dev/ttyUSB1");
-    data_listener_->setCallback(
-        std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
-                  std::placeholders::_1, std::placeholders::_2));
-    RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tty");
-  }
+  void initialize(rclcpp::Node* node);
 
   /**
    * Callback function for every new parsed message received from Atlas.
@@ -70,11 +47,7 @@ class FusionEngineInterface {
    * @param payload_in Message received.
    * @return Nothing.
    */
-  void messageReceived(const MessageHeader& header, const void* payload_in) {
-    auto payload = static_cast<const uint8_t*>(payload_in);
-
-    publisher(header, payload);
-  }
+  void messageReceived(const MessageHeader& header, const void* payload_in);
 
   /**
    * Notifies all AtlasByteFrameListeners of a newly recieved byte frame.
@@ -83,18 +56,13 @@ class FusionEngineInterface {
    * @param frame_ip Frame source ip.
    * @return Nothing.
    */
-  void DecodeFusionEngineMessage(uint8_t* frame, size_t bytes_read) {
-    framer.OnData(frame, bytes_read);
-  }
+  void DecodeFusionEngineMessage(uint8_t* frame, size_t bytes_read);
 
   /**
    * Main service to receive gps data from Atlas.
    * @return Nothing.
    */
-  void service() {
-    RCLCPP_INFO(node_->get_logger(), "Start listening using connection_type");
-    data_listener_->listen();
-  }
+  void service();
 
  private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;

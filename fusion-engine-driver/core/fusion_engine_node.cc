@@ -5,12 +5,10 @@ FusionEngineNode::FusionEngineNode()
     : Node("fusion_engine_node"),
       gps(std::bind(&FusionEngineNode::receivedFusionEngineMessage, this,
                     std::placeholders::_1, std::placeholders::_2)) {
-  this->declare_parameter("atlas_udp_port", 23456);
-  this->declare_parameter("atlas_connection_type", "tty");
-  this->declare_parameter("atlas_tcp_ip", "localhost");
-  this->declare_parameter("atlas_tcp_port", 12345);
-  this->declare_parameter("frame_id", "");
-  frame_id_ = this->get_parameter("frame_id").as_string();
+  this->declare_parameter("udp_port", 12345);
+  this->declare_parameter("connection_type", "tty");
+  this->declare_parameter("tcp_ip", "localhost");
+  this->declare_parameter("tcp_port", 12345);
   frame_id_ = "";
   pose_publisher_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(
       "pose", rclcpp::SensorDataQoS());
@@ -25,16 +23,18 @@ FusionEngineNode::FusionEngineNode()
   timer_ = create_wall_timer(std::chrono::milliseconds(1),
                              std::bind(&FusionEngineNode::serviceLoopCb, this));
 
-  if (this->has_parameter("atlas_connection_type")) {
-    std::string argValue(
-        this->get_parameter("atlas_connection_type").as_string());
+  if (this->has_parameter("connection_type")) {
+    std::string argValue(this->get_parameter("connection_type").as_string());
     if (argValue == "tcp") {
-      gps.initialize(this, this->get_parameter("atlas_tcp_ip").as_string(),
-                     this->get_parameter("atlas_tcp_port").as_int());
+      gps.initialize(this, this->get_parameter("tcp_ip").as_string(),
+                     this->get_parameter("tcp_port").as_int());
     } else if (argValue == "udp") {
-      gps.initialize(this, this->get_parameter("atlas_udp_port").as_int());
+      gps.initialize(this, this->get_parameter("udp_port").as_int());
     } else if (argValue == "tty") {
       gps.initialize(this);
+    } else {
+      std::cout << "Invalid args" << std::endl;
+      rclcpp::shutdown();
     }
   } else {
     std::cout << "Invalid args" << std::endl;
@@ -69,7 +69,7 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     pos.header.frame_id = frame_id_;
     pos.header.stamp = time;
     pose_publisher_->publish(pos);
-    points.header.frame_id = "/my_frame";
+    points.header.frame_id = "/p1_frame";
     points.header.stamp = this->now();
     points.ns = "basic_shapes";
     points.action = visualization_msgs::msg::Marker::ADD;
