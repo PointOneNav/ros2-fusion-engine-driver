@@ -1,7 +1,7 @@
-#ifndef DATA_LISTENER_HPP_
-#define DATA_LISTENER_HPP_
+#pragma once
 
 #include <functional>
+#include <cstdint>
 
 class DataListener
 {
@@ -12,5 +12,3 @@ class DataListener
         virtual void setCallback(const std::function<void(uint8_t*, size_t)>&func) = 0;
     private:
 };
-
-#endif /* !DATA_LISTENER_HPP_ */

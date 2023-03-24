@@ -35,23 +35,25 @@ find_package(rclcpp REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-include_directories(./include)
-include_directories(./include/listener)
-include_directories(./include/interfaces)
+include_directories(./core ./utils ./transport)
 
 set(SRC
     ${SOURCE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/fusion_engine_driver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/serial_port_reader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/fusion_engine_node.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/transport/serial_port_reader.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/transport/tcp_listener.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/transport/udp_listener.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/transport/tty_listener.cc
     )
 
-add_executable(gps ${SRC})
+add_executable(fusion_engine_ros_driver ${SRC})
 
-target_link_libraries(gps fusion_engine_client)
-ament_target_dependencies(gps rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs)
+target_link_libraries(fusion_engine_ros_driver fusion_engine_client)
+ament_target_dependencies(fusion_engine_ros_driver rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs)
 
 install(TARGETS
-  gps
+  fusion_engine_ros_driver
   DESTINATION lib/${PROJECT_NAME}
   )
   

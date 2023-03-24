@@ -1,23 +1,20 @@
-#ifndef POINT_ONE_NAV_ATLAS_HPP
-#define POINT_ONE_NAV_ATLAS_HPP
+#pragma once
 
-#include <vector>
-#include <cstdio>
-
-#include <point_one/fusion_engine/messages/core.h>
-#include <point_one/fusion_engine/parsers/fusion_engine_framer.h>
 #include <point_one/fusion_engine/messages/core.h>
 #include <point_one/fusion_engine/messages/ros.h>
+#include <point_one/fusion_engine/parsers/fusion_engine_framer.h>
 
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "sensor_msgs/msg/imu.hpp"
-#include "gps_msgs/msg/gps_fix.hpp"
-#include "tcp_listener.hpp"
-#include "udp_listener.hpp"
-#include "tty_listener.hpp"
+#include <cstdio>
+#include <vector>
+
 #include "conversion_utils.hpp"
-#include "fusion_engine_message_event.hpp"
+#include "gps_msgs/msg/gps_fix.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/imu.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "tcp_listener.hpp"
+#include "tty_listener.hpp"
+#include "udp_listener.hpp"
 
 using namespace point_one::fusion_engine::messages;
 using namespace point_one::fusion_engine::messages::ros;
@@ -28,38 +25,47 @@ using namespace point_one::fusion_engine::messages::ros;
  * been received.
  */
 class FusionEngineInterface {
-
-public:
+ public:
   /**
    * Initialize needed to set a ros envoronment for logging output.
    * @param node Link to ROS environment.
    * @return Nothing.
    */
-  FusionEngineInterface(std::function<void(const MessageHeader & header, const void * payload_in)> funcPublisher) :
-    framer(1024),
-    publisher(funcPublisher)
-  {
-    framer.SetMessageCallback(std::bind(&FusionEngineInterface::messageReceived, this, std::placeholders::_1, std::placeholders::_2));
+  FusionEngineInterface(
+      std::function<void(const MessageHeader& header, const void* payload_in)>
+          funcPublisher)
+      : framer(1024), publisher(funcPublisher) {
+    framer.SetMessageCallback(std::bind(&FusionEngineInterface::messageReceived,
+                                        this, std::placeholders::_1,
+                                        std::placeholders::_2));
   }
 
-  void initialize(rclcpp::Node * node, std::string tcp_ip, int tcp_port) {
+  void initialize(rclcpp::Node* node, std::string tcp_ip, int tcp_port) {
     this->node_ = node;
     data_listener_ = std::make_shared<TcpListener>(node_, tcp_ip, tcp_port);
-    data_listener_->setCallback(std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this, std::placeholders::_1, std::placeholders::_2));
-    RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tcp in port %d", tcp_port);
+    data_listener_->setCallback(
+        std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
+                  std::placeholders::_1, std::placeholders::_2));
+    RCLCPP_INFO(node_->get_logger(),
+                "Initialize connection_type tcp in port %d", tcp_port);
   }
 
-  void initialize(rclcpp::Node * node, int udp_port) {
+  void initialize(rclcpp::Node* node, int udp_port) {
     this->node_ = node;
     data_listener_ = std::make_shared<UdpListener>(node_, udp_port);
-    data_listener_->setCallback(std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this, std::placeholders::_1, std::placeholders::_2));
-    RCLCPP_INFO(node_->get_logger(), "Initialize connection_type udp in port %d", udp_port);
+    data_listener_->setCallback(
+        std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
+                  std::placeholders::_1, std::placeholders::_2));
+    RCLCPP_INFO(node_->get_logger(),
+                "Initialize connection_type udp in port %d", udp_port);
   }
 
-  void initialize(rclcpp::Node * node) {
+  void initialize(rclcpp::Node* node) {
     this->node_ = node;
     data_listener_ = std::make_shared<TtyListener>(node_, "/dev/ttyUSB1");
-    data_listener_->setCallback(std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this, std::placeholders::_1, std::placeholders::_2));
+    data_listener_->setCallback(
+        std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
+                  std::placeholders::_1, std::placeholders::_2));
     RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tty");
   }
 
@@ -69,7 +75,7 @@ public:
    * @param payload_in Message received.
    * @return Nothing.
    */
-  void messageReceived(const MessageHeader & header, const void * payload_in) {
+  void messageReceived(const MessageHeader& header, const void* payload_in) {
     auto payload = static_cast<const uint8_t*>(payload_in);
 
     publisher(header, payload);
@@ -82,7 +88,7 @@ public:
    * @param frame_ip Frame source ip.
    * @return Nothing.
    */
-  void DecodeFusionEngineMessage(uint8_t * frame, size_t bytes_read) {
+  void DecodeFusionEngineMessage(uint8_t* frame, size_t bytes_read) {
     framer.OnData(frame, bytes_read);
   }
 
@@ -95,11 +101,10 @@ public:
     data_listener_->listen();
   }
 
-private:
+ private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;
-  std::function<void(const MessageHeader & header, const void * payload_in)> publisher;
-  rclcpp::Node * node_;
+  std::function<void(const MessageHeader& header, const void* payload_in)>
+      publisher;
+  rclcpp::Node* node_;
   std::shared_ptr<DataListener> data_listener_;
 };
-
-#endif
