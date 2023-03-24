@@ -57,6 +57,9 @@ Now that you have installed the node and it is ready for use here is how to use 
 You have 3 different modes to use it. At first you will have to fill in the type of connection to launch the program.
 The three types are as follows (tcp, udp, serial). These three types have different parameters, they are the following.
 
+> **Warning**
+> To use the tcp and udp modes, you need to run the p1-runner in the mode of your choice next to it.
+
 * TCP
 
 To launch in tcp you will need its port and id. 
@@ -95,6 +98,7 @@ $ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connectio
 ```
 
 In this case, these arguments are optional, in fact there are default values (/dev/ttyUSB1).
+
 
 ## Annexes
 
