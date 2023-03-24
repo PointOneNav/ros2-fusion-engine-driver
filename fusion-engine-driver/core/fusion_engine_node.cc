@@ -8,6 +8,7 @@ FusionEngineNode::FusionEngineNode()
   this->declare_parameter("udp_port", 12345);
   this->declare_parameter("connection_type", "tty");
   this->declare_parameter("tcp_ip", "localhost");
+  this->declare_parameter("tty_port", "/dev/ttyUSB1");
   this->declare_parameter("tcp_port", 12345);
   frame_id_ = "";
   pose_publisher_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(
@@ -31,7 +32,7 @@ FusionEngineNode::FusionEngineNode()
     } else if (argValue == "udp") {
       gps.initialize(this, this->get_parameter("udp_port").as_int());
     } else if (argValue == "tty") {
-      gps.initialize(this);
+      gps.initialize(this, this->get_parameter("tty_port").as_int());
     } else {
       std::cout << "Invalid args" << std::endl;
       rclcpp::shutdown();

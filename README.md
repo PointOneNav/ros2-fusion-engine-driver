@@ -2,8 +2,7 @@
 1. [Fusion engine driver ros2](#fusion-engine-driver-ros2)
 2. [Technologies](#requirements)
 3. [Installation](#installation)
-<!-- 4. [FAQs](#faqs) -->
-<!-- 4. [Collaboration](#collaboration) -->
+3. [Usage](#usage)
 
 ### Fusion engine driver ros2
 ***
@@ -39,6 +38,54 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
 ```
+
+## Usage
+
+Now that you have installed the node and it is ready for use here is how to use it.
+You have 3 different modes to use it. At first you will have to fill in the type of connection to launch the program.
+The three types are as follows (tcp, udp, tty). These three types have different parameters, they are the following.
+
+* TCP
+
+To launch in tcp you will need its port and id. 
+Here is an example to launch in tcp.
+
+```
+$ colcon build --packages-select fusion-engine-driver                                                            
+$ . install/local_setup.bash                                                                                   
+$ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=tcp -p tcp_ip:=localhost -p tcp_port:=12345
+```
+
+In this case, these arguments are optional, in fact there are default values (localhost and 12345).
+
+* UDP
+
+To launch in udp you will need its port. 
+Here is an example to launch in udp.
+
+```
+$ colcon build --packages-select fusion-engine-driver                                                            
+$ . install/local_setup.bash                                                                                   
+$ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=udp -p udp_port:=12345
+```
+
+In this case, these arguments are optional, in fact there are default values (12345).
+
+* TTY
+
+To launch in tty you will need its port. 
+Here is an example to launch in tty.
+
+```
+$ colcon build --packages-select fusion-engine-driver                                                            
+$ . install/local_setup.bash                                                                                   
+$ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=tty -p tty_port:=/dev/ttyUSB1
+```
+
+In this case, these arguments are optional, in fact there are default values (/dev/ttyUSB1).
+
+## Annexes
+
 
 The first time you use ros2 with the gps you may not get any messages you need to set the gps for specific message types. To do this after launching the virtual environment you will need to go in the folder quectel_runner/bin to make the following control. 
 

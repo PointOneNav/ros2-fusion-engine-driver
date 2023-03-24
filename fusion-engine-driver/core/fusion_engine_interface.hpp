@@ -35,11 +35,11 @@ class FusionEngineInterface {
       std::function<void(const MessageHeader& header, const void* payload_in)>
           funcPublisher);
 
-  void initialize(rclcpp::Node* node, std::string tcp_ip, int tcp_port);
+  void initialize(rclcpp::Node* node, const std::string &tcp_ip, int tcp_port);
 
   void initialize(rclcpp::Node* node, int udp_port);
 
-  void initialize(rclcpp::Node* node);
+  void initialize(rclcpp::Node* node, const std::string &tty_port);
 
   /**
    * Callback function for every new parsed message received from Atlas.

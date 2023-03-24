@@ -11,7 +11,7 @@ FusionEngineInterface::FusionEngineInterface(
 }
 
 /******************************************************************************/
-void FusionEngineInterface::initialize(rclcpp::Node* node, std::string tcp_ip, int tcp_port) {
+void FusionEngineInterface::initialize(rclcpp::Node* node, const std::string &tcp_ip, int tcp_port) {
   this->node_ = node;
   data_listener_ = std::make_shared<TcpListener>(node_, tcp_ip, tcp_port);
   data_listener_->setCallback(
@@ -33,9 +33,9 @@ void FusionEngineInterface::initialize(rclcpp::Node* node, int udp_port) {
 }
 
 /******************************************************************************/
-void FusionEngineInterface::initialize(rclcpp::Node* node) {
+void FusionEngineInterface::initialize(rclcpp::Node* node, const std::string &tty_port) {
   this->node_ = node;
-  data_listener_ = std::make_shared<TtyListener>(node_, "/dev/ttyUSB1");
+  data_listener_ = std::make_shared<TtyListener>(node_, tty_port);
   data_listener_->setCallback(
       std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
                 std::placeholders::_1, std::placeholders::_2));
