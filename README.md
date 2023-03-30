@@ -1,13 +1,8 @@
-## Table of Contents
-1. [Fusion engine driver ros2](#fusion-engine-driver-ros2)
-2. [Technologies](#requirements)
-3. [Installation](#installation)
-3. [Usage](#usage)
+# Point One FusionEngine ROS 2 Driver
 
-### Fusion engine driver ros2
-***
-This project enables developers to use the fusion engine output data in a ROS2 node.
-The node will receive from the quectel_runner the the data on the following topics that you can susbcribe to:
+This project contains support for interacting with the Point One navigation engine in ROS 2 using the FusionEngine
+protocol. The driver can be configured to talk to a FusionEngine device over TCP, UDP, or serial connection. The ROS
+driver will receive data from the FusionEngine device, and will publish the following ROS topics:
 
 * [pose](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)
 * [gps_fix](http://docs.ros.org/en/hydro/api/gps_common/html/msg/GPSFix.html)
@@ -15,115 +10,145 @@ The node will receive from the quectel_runner the the data on the following topi
 * [imu](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Imu.html)
 * [visualization_marker](http://wiki.ros.org/rviz/DisplayTypes/Marker)
 
-## Requirements
-***
-A list of technologies used within the project:
-* [Quectel](https://cdn.sanity.io/files/2p5fn5cz/production/5fd38edae48d577105acd1393bf918b81c9837e1.pdf)
-* [ROS 2](https://docs.ros.org/en/humble/Installation.html)
+See https://github.com/PointOneNav/fusion-engine-client for the latest details and support code for the Point One
+FusionEngine protocol.
+
+This library is released under the [MIT license agreement](LICENSE). We welcome code and documentation contributions
+from users. See [Contributing](CONTRIBUTING.md) for instructions on how to report issues and develop, test, and submit
+code changes.
+
+If you encounter an issue, please [submit a ticket](CONTRIBUTING.md#reporting-issues). If you need support with Point
+One FusionEngine or a Point One device (Atlas, Quectel LG69T, etc.), please contact support@pointonenav.com.
+
+### Table Of Contents
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Connecting Over TCP](#connecting-over-tcp)
+  * [Connecting Over Serial](#connecting-over-serial)
+* [Visualizing Output With `rviz2`](#visualizing-output-with-rviz2)
+
+### Requirements
+
+- C++11 or later
+- CMake 3.x
+- GCC, Clang, or Microsoft Visual Studio
+- [ROS 2](https://docs.ros.org/en/humble/Installation.html)
+- The ROS `gps-msgs` package for the version of ROS 2 that you installed above. For example, if you installed ROS 2
+  Humble:
+  ```
+  sudo apt-get install ros-humble-gps-msgs
+  ```
+- A Point One FusionEngine device (https://pointonenav.com/product/)
 
 ## Installation
-***
 
-The first time you use ros2 with the gps you may not get any messages you need to set the gps for specific message types. To do this after launching the virtual environment you will need to go in the folder p1_runner/bin to make the following control. This step is necessary for enabled ROS messages in FusionEngine.
+Before using the ROS 2 driver, you must configure your FusionEngine device to output the following messages:
+- `ROSPoseMessage`
+- `ROSGPSFixMessage`
+- `ROSIMUMessage` (optional)
 
-```
-$ python3 -m venv venv
-$ source venv/bin/activate
-$ pip install -r requirements.txt
-```
+You may configure your Point One device using the Point One Desktop Application or Python Configuration Tool. Both
+tools are available at https://pointonenav.com/docs/#standard-dev-kit. See the sections below for instructions on using
+the Configuration Tool (`config_tool`).
 
-```
-$ config_tool.py apply uart2_message_rate fe ROSPoseMessage 100ms
-$ config_tool.py apply uart2_message_rate fe ROSGPSFixMessage 100ms
-$ config_tool.py apply uart2_message_rate fe ROSIMUMessage 100ms
-$ config_tool.py save
-```
-Once you have activated the ros messages. You will install the node.
+With your device configured, you may now compile and install the ROS 2 driver:
 
 ```
-$ mkdir ros-fusion-engine
-$ git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git ros-fusion-engine
-$ cd ros-fusion-engine
-$ sudo apt-get install ros-humble-gps-msgs
-$ rosdep install -i --from-path ./ --rosdistro foxy -y
-$ colcon build --packages-select fusion-engine-driver                                                            
-$ . install/local_setup.bash                                                                                   
+git clone https://github.com/PointOneNav/ros2-fusion-engine-driver.git
+cd ros2-fusion-engine-driver
+rosdep install -i --from-path ./ --rosdistro humble -y
+colcon build --packages-select fusion-engine-driver
+source install/local_setup.bash
+```
+
+_Note that you should replace `humble` with the appropriate version of ROS 2 above._
+
+### Configuring A FusionEngine Device Using `config_tool.exe` (Windows)
+
+The following example configures serial UART2 on a Quectel LG69T device to output the required FusionEngine ROS
+messages:
+
+```
+config_tool.exe apply uart2_message_rate fe ROSPoseMessage 100ms
+config_tool.exe apply uart2_message_rate fe ROSGPSFixMessage 100ms
+config_tool.exe apply uart2_message_rate fe ROSIMUMessage on
+config_tool.exe save
+```
+
+### Configuring A FusionEngine Device Using `config_tool.py` (Linux/Mac)
+
+_Note: For Python, we strongly recommend using a virtual environment to avoid conflicts between the application's
+requirements and other Python applications on your computer:_
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+The following example configures serial UART2 on a Quectel LG69T device to output the required FusionEngine ROS
+messages:
+
+```
+config_tool.py apply uart2_message_rate fe ROSPoseMessage 100ms
+config_tool.py apply uart2_message_rate fe ROSGPSFixMessage 100ms
+config_tool.py apply uart2_message_rate fe ROSIMUMessage 100ms
+config_tool.py save
 ```
 
 ## Usage
-***
 
-Now that you have installed the node and it is ready for use here is how to use it.
-You have 3 different modes to use it. At first you will have to fill in the type of connection to launch the program.
-The three types are as follows (tcp, udp, serial). These three types have different parameters, they are the following.
-
-> **Warning**
-> To use the tcp and udp modes, you need to run the p1-runner in the mode of your choice next to it.
-
-* TCP
-
-To launch in tcp you will need its port and id. 
-Here is an example to launch in tcp.
-
+Before running the ROS 2 driver, you must first source the ROS setup script as follows:
 ```
-$ colcon build --packages-select fusion-engine-driver                                                            
-$ . install/local_setup.bash                                                                                   
-$ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=tcp -p tcp_ip:=localhost -p tcp_port:=12345
+source install/local_setup.bash
 ```
 
-In this case, these arguments are optional, in fact there are default values (localhost and 12345).
+Next, run the ROS 2 driver and configure it to connect to the FusionEngine device. You may connect over TCP, UDP, or
+serial, depending on which transports your device supports.
 
-* UDP
+### Connecting Over TCP
 
-To launch in udp you will need its port. 
-Here is an example to launch in udp.
-
-```
-$ colcon build --packages-select fusion-engine-driver                                                            
-$ . install/local_setup.bash                                                                                   
-$ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=udp -p udp_port:=12345
-```
-
-In this case, these arguments are optional, in fact there are default values (12345).
-
-* serial
-
-To launch in serial you will need its port. 
-Here is an example to launch in serial.
+To connect to a device over TCP, specify the device hostname/IP address and port as shown below:
 
 ```
-$ colcon build --packages-select fusion-engine-driver                                                            
-$ . install/local_setup.bash                                                                                   
-$ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=tty -p tty_port:=/dev/ttyUSB1
+ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=tcp -p tcp_ip:=192.168.1.3 -p tcp_port:=12345
 ```
 
-In this case, these arguments are optional, in fact there are default values (/dev/ttyUSB1).
+#### Connecting Over TCP Through `p1_runner`
 
-
-## Annexes
-
-Once these installations are done, you will have to do these actions on 3 different terminals.
-
-Tcp mode require more than just turning on the card.
-For using tcp, you should go to the p1_runner folder, and doing this actions:
+For some devices, the `p1_runner` Python application can be used to log data and supply GNSS corrections from an NTRIP
+server. If you are using the `p1_runner` to communicate with a device over serial, you can configure `p1_runner` to
+relay the data to the ROS 2 driver over TCP as follows:
 
 ```
-$ pip install -r requirements.txt
-$ python3 -m quectel_runner --device-id [YOUR ID] --polaris [YOUR KEY]  -v  --tcp 12345 --output-type=all
+p1_runner/bin/runner.py --tcp 12345
 ```
 
-Now that you can retrieve the fusion engine information in ros, you have the possibility to display it in rviz by performing these actions:
+Then you can configure the driver to connect to `p1_runner` on `localhost`:
 
 ```
-$ rviz2
+ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=tcp -p tcp_ip:=localhost -p tcp_port:=12345
 ```
 
-Initially when you open rviz for the first time you will see this screen:
+### Connecting Over Serial
 
-![Screenshot](./docs/images/basic_rviz_without_config.png)
+To connect to a device over serial, specify the serial port device name as follows:
 
-When you're on rviz you will need to go to the File > Open config tab at the top of the page.
-And you will need to go to the rviz2_config folder in the repository and select the file from there.
-Once you have added the configuration you will have this screen:
+```
+ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_type:=tty -p tty_port:=/dev/ttyUSB1
+```
 
-![Screenshot](./docs/images/rviz_window_with_config.png)
+## Visualizing Output With `rviz2`
+
+Once your ROS 2 driver is running and communicating with the device, you should be able to display its output using the
+ROS 2 `rviz2` tool.
+
+1. Open `rviz2`:
+   ```
+   rviz2
+   ```
+2. Go to File -> Open Config and select
+   [rviz2_config/fusion_engine_driver.rviz](rviz2_config/fusion_engine_driver.rviz).
+3. You should see the following display, and the output from the device will be shown as it arrives:
+   ![rviz2 Screenshot](./docs/images/rviz_window_with_config.png)
