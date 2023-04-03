@@ -21,10 +21,10 @@ class FusionEngineNode : public rclcpp::Node {
   FusionEngineNode();
 
   /**
-   * @brief Recei
+   * @brief Receive Fusion Message, build and post them in ros system.
    * 
-   * @param header 
-   * @param payload 
+   * @param header Message header with type of message.
+   * @param payload Message content
    */
   void receivedFusionEngineMessage(const MessageHeader &header,
                                    const void *payload);
