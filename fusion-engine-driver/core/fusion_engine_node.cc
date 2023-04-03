@@ -108,14 +108,21 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     p.z = pos.pose.position.z;
 
     if (!std::isnan(p.x) && !std::isnan(p.y) && !std::isnan(p.z)) {
+<<<<<<< HEAD
       if (this->get_parameter("debug").as_bool())
         RCLCPP_INFO(this->get_logger(), "Point published = [LLA=%f, %f, %f]",
                     p.x, p.y, p.z);
+=======
+      std::cout << "Point published = [LLA=" << p.x << ", " << p.y << ", "
+                << p.z << "]" << std::endl;
+
+>>>>>>> 455b9e0 ([FIX] update of rviz confing for p1-frame insted of my-frame nd dropped nan message)
       points.points.push_back(p);
       publisher_->publish(points);
       id++;
 
     } else {
+<<<<<<< HEAD
       if (this->get_parameter("debug").as_bool())
         RCLCPP_INFO(this->get_logger(), "Point dropped = [LLA=%f, %f, %f]", p.x,
                     p.y, p.z);
@@ -146,6 +153,11 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     if (this->get_parameter("debug").as_bool())
       RCLCPP_INFO(this->get_logger(), "Corrections age received (%d)",
                   contents.corrections_age);
+=======
+      std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", " << p.z
+                << "]" << std::endl;
+    }
+>>>>>>> 455b9e0 ([FIX] update of rviz confing for p1-frame insted of my-frame nd dropped nan message)
   }
 }
 
