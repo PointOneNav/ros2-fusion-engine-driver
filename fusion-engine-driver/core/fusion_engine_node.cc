@@ -6,7 +6,7 @@ FusionEngineNode::FusionEngineNode()
       gps(std::bind(&FusionEngineNode::receivedFusionEngineMessage, this,
                     std::placeholders::_1, std::placeholders::_2)) {
   this->declare_parameter("udp_port", 12345);
-  this->declare_parameter("connection_type", "tty");
+  this->declare_parameter("connection_type", "tcp");
   this->declare_parameter("tcp_ip", "localhost");
   this->declare_parameter("tty_port", "/dev/ttyUSB1");
   this->declare_parameter("tcp_port", 12345);
@@ -32,7 +32,7 @@ FusionEngineNode::FusionEngineNode()
     } else if (argValue == "udp") {
       gps.initialize(this, this->get_parameter("udp_port").as_int());
     } else if (argValue == "tty") {
-      gps.initialize(this, this->get_parameter("tty_port").as_int());
+      gps.initialize(this, this->get_parameter("tty_port").as_string());
     } else {
       std::cout << "Invalid args" << std::endl;
       rclcpp::shutdown();
@@ -86,17 +86,18 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     p.y = pos.pose.position.y;
     p.z = pos.pose.position.z;
 
-    points.points.push_back(p);
-    while (publisher_->get_subscription_count() < 1) {
-      if (!rclcpp::ok()) {
-        return;
-      }
-      RCLCPP_WARN_ONCE(this->get_logger(),
-                       "Please create a subscriber to the marker");
-      sleep(1);
+    if (!std::isnan(p.x) && !std::isnan(p.y) && !std::isnan(p.z)) {
+      std::cout << "Point published = [LLA=" << p.x << ", " << p.y << ", "
+                << p.z << "]" << std::endl;
+
+      points.points.push_back(p);
+      publisher_->publish(points);
+      id++;
+
+    } else {
+      std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", " << p.z
+                << "]" << std::endl;
     }
-    publisher_->publish(points);
-    id++;
   }
 }
 
