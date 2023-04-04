@@ -10,6 +10,7 @@ FusionEngineNode::FusionEngineNode()
   this->declare_parameter("tcp_ip", "localhost");
   this->declare_parameter("tty_port", "/dev/ttyUSB1");
   this->declare_parameter("tcp_port", 12345);
+  this->declare_parameter("debug", false);
   frame_id_ = "";
   pose_publisher_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(
       "pose", rclcpp::SensorDataQoS());
@@ -87,16 +88,18 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     p.z = pos.pose.position.z;
 
     if (!std::isnan(p.x) && !std::isnan(p.y) && !std::isnan(p.z)) {
-      std::cout << "Point published = [LLA=" << p.x << ", " << p.y << ", "
-                << p.z << "]" << std::endl;
+      if (this->get_parameter("debug").as_bool())
+        std::cout << "Point published = [LLA=" << p.x << ", " << p.y << ", "
+                  << p.z << "]" << std::endl;
 
       points.points.push_back(p);
       publisher_->publish(points);
       id++;
 
     } else {
-      std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", " << p.z
-                << "]" << std::endl;
+      if (this->get_parameter("debug").as_bool())
+        std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", "
+                  << p.z << "]" << std::endl;
     }
   }
 }
