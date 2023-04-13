@@ -11,8 +11,6 @@
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 #include "sensor_msgs/msg/nav_sat_status.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "mavros_msgs/msg/rtcm.hpp"
-#include "nmea_msgs/msg/sentence.hpp"
 #include "visualization_msgs/msg/marker.hpp"
 
 /*
@@ -43,14 +41,7 @@ class FusionEngineNode : public rclcpp::Node {
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr nav_fix_publisher_;
   rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher_;
-  rclcpp::Publisher<nmea_msgs::msg::Sentence>::SharedPtr nmea_publisher_;
-  rclcpp::Subscription<mavros_msgs::msg::RTCM>::SharedPtr ntrip_subscription_;
   rclcpp::TimerBase::SharedPtr timer_;
-  double prev_time_;
-  uint16_t satellite_nb_;
-
-  void receiveCorrection(const mavros_msgs::msg::RTCM::SharedPtr msg);
-
 
   std::string frame_id_;
   int id = 0;

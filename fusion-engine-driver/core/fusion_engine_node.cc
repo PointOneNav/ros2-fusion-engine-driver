@@ -24,11 +24,6 @@ FusionEngineNode::FusionEngineNode()
       "imu", rclcpp::SensorDataQoS());
   publisher_ = this->create_publisher<visualization_msgs::msg::Marker>(
       "visualization_marker", 1);
-  nmea_publisher_ = this->create_publisher<nmea_msgs::msg::Sentence>("/nmea", 1);
-  ntrip_subscription_ = this->create_subscription<mavros_msgs::msg::RTCM>(
-      "/rtcm", 10,
-      std::bind(&FusionEngineNode::receiveCorrection, this,
-                std::placeholders::_1));
   timer_ = create_wall_timer(std::chrono::milliseconds(1),
                              std::bind(&FusionEngineNode::serviceLoopCb, this));
   prev_time_ = -1;
