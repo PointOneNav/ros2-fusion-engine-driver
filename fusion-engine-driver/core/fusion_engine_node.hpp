@@ -6,6 +6,8 @@
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "gps_msgs/msg/gps_fix.hpp"
 #include "gps_msgs/msg/gps_status.hpp"
+#include "mavros_msgs/msg/rtcm.hpp"
+#include "nmea_msgs/msg/sentence.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
@@ -41,10 +43,16 @@ class FusionEngineNode : public rclcpp::Node {
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr nav_fix_publisher_;
   rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher_;
+  rclcpp::Publisher<nmea_msgs::msg::Sentence>::SharedPtr nmea_publisher_;
+  rclcpp::Subscription<mavros_msgs::msg::RTCM>::SharedPtr ntrip_subscription_;
   rclcpp::TimerBase::SharedPtr timer_;
 
+  double prev_time_;
+  uint16_t satellite_nb_;
   std::string frame_id_;
   int id = 0;
+
+  void receiveCorrection(const mavros_msgs::msg::RTCM::SharedPtr msg);
 
   /**
    * Initiate gps unit to read data.

@@ -30,6 +30,8 @@ find_package(gps_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
+find_package(mavros_msgs REQUIRED)
+find_package(nmea_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -51,7 +53,7 @@ set(SRC
 add_executable(fusion_engine_ros_driver ${SRC})
 
 target_link_libraries(fusion_engine_ros_driver fusion_engine_client)
-ament_target_dependencies(fusion_engine_ros_driver rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs)
+ament_target_dependencies(fusion_engine_ros_driver rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs mavros_msgs nmea_msgs)
 
 install(TARGETS
   fusion_engine_ros_driver

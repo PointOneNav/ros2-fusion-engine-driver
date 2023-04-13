@@ -60,7 +60,7 @@ FusionEngineNode::FusionEngineNode()
 /******************************************************************************/
 FusionEngineNode::~FusionEngineNode() {
   if (listener_thread_.joinable()) {
-    gps.stop();
+    fe_interface_.stop();
     listener_thread_.join();
   }
 }
@@ -108,39 +108,17 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     p.z = pos.pose.position.z;
 
     if (!std::isnan(p.x) && !std::isnan(p.y) && !std::isnan(p.z)) {
-<<<<<<< HEAD
       if (this->get_parameter("debug").as_bool())
         RCLCPP_INFO(this->get_logger(), "Point published = [LLA=%f, %f, %f]",
                     p.x, p.y, p.z);
-=======
-      std::cout << "Point published = [LLA=" << p.x << ", " << p.y << ", "
-                << p.z << "]" << std::endl;
-
->>>>>>> 455b9e0 ([FIX] update of rviz confing for p1-frame insted of my-frame nd dropped nan message)
       points.points.push_back(p);
       publisher_->publish(points);
       id++;
 
     } else {
-<<<<<<< HEAD
       if (this->get_parameter("debug").as_bool())
-        RCLCPP_INFO(this->get_logger(), "Point dropped = [LLA=%f, %f, %f]", p.x,
-                    p.y, p.z);
-    }
-  } else if (header.message_type == MessageType::POSE &&
-             this->get_parameter("connection_type").as_string() == "tty") {
-    auto &contents = *reinterpret_cast<
-        const point_one::fusion_engine::messages::PoseMessage *>(payload);
-    double gps_time_sec =
-        contents.gps_time.seconds + contents.gps_time.fraction_ns * 1e-9;
-    if (gps_time_sec - previous_gps_time_sec_ >
-        TIME_BETWEEN_NMEA_UPDATES_SEC_) {
-      nmea_msgs::msg::Sentence nmea =
-          ConversionUtils::toNMEA(contents, satellite_nb_);
-      nmea.header.stamp = this->now();
-      nmea.header.frame_id = "gps";
-      previous_gps_time_sec_ = gps_time_sec;
-      nmea_publisher_->publish(nmea);
+        std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", "
+                  << p.z << "]" << std::endl;
     }
   } else if (header.message_type == MessageType::GNSS_SATELLITE) {
     auto &contents = *reinterpret_cast<
@@ -153,11 +131,6 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     if (this->get_parameter("debug").as_bool())
       RCLCPP_INFO(this->get_logger(), "Corrections age received (%d)",
                   contents.corrections_age);
-=======
-      std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", " << p.z
-                << "]" << std::endl;
-    }
->>>>>>> 455b9e0 ([FIX] update of rviz confing for p1-frame insted of my-frame nd dropped nan message)
   }
 }
 
@@ -191,4 +164,4 @@ void FusionEngineNode::rosServiceLoop() {
 }
 
 /******************************************************************************/
-void FusionEngineNode::dataListenerService() { gps.dataListenerService(); }
+void FusionEngineNode::dataListenerService() { fe_interface_.dataListenerService(); }

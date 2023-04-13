@@ -5,6 +5,8 @@
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "gps_msgs/msg/gps_fix.hpp"
 #include "sensor_msgs/msg/imu.hpp"
+#include "mavros_msgs/msg/rtcm.hpp"
+#include "nmea_msgs/msg/sentence.hpp"
 
 class ConversionUtils {
  public:
@@ -95,5 +97,26 @@ class ConversionUtils {
     pose_stamped.pose.orientation.w = contents.orientation[3];
     return pose_stamped;
   }
-};
 
+  static nmea_msgs::msg::Sentence toNMEA(
+      const point_one::fusion_engine::messages::PoseMessage& contents,
+      uint16_t& nb_satellite) {
+    double p1_time_sec =
+        contents.p1_time.seconds + contents.p1_time.fraction_ns * 1e-9;
+    nmea_msgs::msg::Sentence nmea;
+    nmea.sentence += "$GPGGA,";
+    nmea.sentence += std::to_string(p1_time_sec) + ",";
+    nmea.sentence += std::to_string(contents.lla_deg[0]) + ",N,";
+    nmea.sentence += std::to_string(contents.lla_deg[1]) + ",W,";
+    nmea.sentence +=
+        std::to_string(static_cast<uint8_t>(contents.solution_type)) + ",";
+    nmea.sentence += std::to_string(1) + ",";             // hdop
+    nmea.sentence += std::to_string(nb_satellite) + ",";  // nb sattelite
+    nmea.sentence += std::to_string(1.6) + ",";           // antenna alt
+    nmea.sentence += std::to_string(1.6) + ",";           // antenna alt
+    nmea.sentence += "M,";                                // unit alt M or F
+    nmea.sentence + std::to_string(contents.lla_deg[2]) + ",";
+    nmea.sentence += "M,-20.7,M,,0000*5F";  // unit alt M or F
+    return nmea;
+  }
+};
