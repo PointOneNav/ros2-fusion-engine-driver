@@ -53,7 +53,7 @@ set(SRC
 add_executable(fusion_engine_ros_driver ${SRC})
 
 target_link_libraries(fusion_engine_ros_driver fusion_engine_client)
-ament_target_dependencies(fusion_engine_ros_driver rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs mavros_msgs nmea_msgs)
+ament_target_dependencies(fusion_engine_ros_driver rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs)
 
 install(TARGETS
   fusion_engine_ros_driver
