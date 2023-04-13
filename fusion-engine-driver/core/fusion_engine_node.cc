@@ -26,7 +26,6 @@ FusionEngineNode::FusionEngineNode()
       "visualization_marker", 1);
   timer_ = create_wall_timer(std::chrono::milliseconds(1),
                              std::bind(&FusionEngineNode::serviceLoopCb, this));
-  prev_time_ = -1;
 
   if (this->has_parameter("connection_type")) {
     std::string argValue(this->get_parameter("connection_type").as_string());
