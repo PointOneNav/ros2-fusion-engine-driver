@@ -21,16 +21,16 @@ class FusionEngineNode : public rclcpp::Node {
   FusionEngineNode();
 
   /**
-   * Callback function triggered by atlas receiving a complete message.
-   * @param evt GPS/IMU data.
-   * @return Nothing.
+   * @brief Receive Fusion Message, build and post them in ros system.
+   * 
+   * @param header Message header with type of message.
+   * @param payload Message content
    */
   void receivedFusionEngineMessage(const MessageHeader &header,
                                    const void *payload);
   /**
    * Translate GPSFix to NavFixMsg
    * @param gps_fix Atlas gps data point.
-   * @return Nothing.
    */
   void publishNavFixMsg(const gps_msgs::msg::GPSFix &gps_fix);
 

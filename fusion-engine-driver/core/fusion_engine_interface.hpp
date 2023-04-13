@@ -27,40 +27,37 @@ using namespace point_one::fusion_engine::messages::ros;
 class FusionEngineInterface {
  public:
   /**
-   * Initialize needed to set a ros envoronment for logging output.
-   * @param node Link to ROS environment.
-   * @return Nothing.
+   * @brief Construct a new Fusion Engine Interface object
+   *
+   * @param funcPublisher
    */
   FusionEngineInterface(
       std::function<void(const MessageHeader& header, const void* payload_in)>
           funcPublisher);
 
-  void initialize(rclcpp::Node* node, const std::string &tcp_ip, int tcp_port);
+  void initialize(rclcpp::Node* node, const std::string& tcp_ip, int tcp_port);
 
   void initialize(rclcpp::Node* node, int udp_port);
 
-  void initialize(rclcpp::Node* node, const std::string &tty_port);
+  void initialize(rclcpp::Node* node, const std::string& tty_port);
 
   /**
    * Callback function for every new parsed message received from Atlas.
    * @param header Metadata on payload.
    * @param payload_in Message received.
-   * @return Nothing.
    */
   void messageReceived(const MessageHeader& header, const void* payload_in);
 
   /**
-   * Notifies all AtlasByteFrameListeners of a newly recieved byte frame.
-   * @param frame Raw byte frame received.
-   * @param bytes_read Size of byte frame.
-   * @param frame_ip Frame source ip.
-   * @return Nothing.
+   * @brief Call fusion engine decoder.
+   *
+   * @param frame Message content.
+   * @param bytes_read Message size.
    */
   void DecodeFusionEngineMessage(uint8_t* frame, size_t bytes_read);
 
   /**
    * Main service to receive gps data from Atlas.
-   * @return Nothing.
    */
   void service();
 
