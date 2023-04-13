@@ -4,7 +4,7 @@
 FusionEngineInterface::FusionEngineInterface(
     std::function<void(const MessageHeader& header, const void* payload_in)>
         funcPublisher)
-    : framer(1024), publisher(funcPublisher) {
+    : framer(2048), publisher(funcPublisher) {
   framer.SetMessageCallback(std::bind(&FusionEngineInterface::messageReceived,
                                       this, std::placeholders::_1,
                                       std::placeholders::_2));
