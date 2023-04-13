@@ -35,7 +35,7 @@ class FusionEngineNode : public rclcpp::Node {
   void publishNavFixMsg(const gps_msgs::msg::GPSFix &gps_fix);
 
  private:
-  FusionEngineInterface gps;
+  FusionEngineInterface fe_interface_;
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_publisher_;
   rclcpp::Publisher<gps_msgs::msg::GPSFix>::SharedPtr gps_fix_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;

@@ -3,7 +3,7 @@
 /******************************************************************************/
 FusionEngineNode::FusionEngineNode()
     : Node("fusion_engine_node"),
-      gps(std::bind(&FusionEngineNode::receivedFusionEngineMessage, this,
+      fe_interface_(std::bind(&FusionEngineNode::receivedFusionEngineMessage, this,
                     std::placeholders::_1, std::placeholders::_2)) {
   this->declare_parameter("udp_port", 12345);
   this->declare_parameter("connection_type", "tcp");
@@ -27,12 +27,12 @@ FusionEngineNode::FusionEngineNode()
   if (this->has_parameter("connection_type")) {
     std::string argValue(this->get_parameter("connection_type").as_string());
     if (argValue == "tcp") {
-      gps.initialize(this, this->get_parameter("tcp_ip").as_string(),
+      fe_interface_.initialize(this, this->get_parameter("tcp_ip").as_string(),
                      this->get_parameter("tcp_port").as_int());
     } else if (argValue == "udp") {
-      gps.initialize(this, this->get_parameter("udp_port").as_int());
+      fe_interface_.initialize(this, this->get_parameter("udp_port").as_int());
     } else if (argValue == "tty") {
-      gps.initialize(this, this->get_parameter("tty_port").as_string());
+      fe_interface_.initialize(this, this->get_parameter("tty_port").as_string());
     } else {
       std::cout << "Invalid args" << std::endl;
       rclcpp::shutdown();
@@ -128,5 +128,5 @@ void FusionEngineNode::publishNavFixMsg(const gps_msgs::msg::GPSFix &gps_fix) {
 void FusionEngineNode::serviceLoopCb() {
   RCLCPP_INFO(this->get_logger(), "Service");
   timer_->cancel();
-  gps.service();
+  fe_interface_.service();
 }
