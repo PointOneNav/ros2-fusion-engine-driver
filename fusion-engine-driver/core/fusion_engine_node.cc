@@ -8,9 +8,12 @@ FusionEngineNode::FusionEngineNode()
   this->declare_parameter("udp_port", 12345);
   this->declare_parameter("connection_type", "tcp");
   this->declare_parameter("tcp_ip", "localhost");
-  this->declare_parameter("tty_port", "/dev/ttyUSB1");
+  this->declare_parameter("tty_port", "/dev/ttyUSB0");
   this->declare_parameter("tcp_port", 12345);
+  this->declare_parameter("debug", false);
   frame_id_ = "";
+  timer_ = create_wall_timer(std::chrono::milliseconds(1),
+                             std::bind(&FusionEngineNode::rosServiceLoop, this));
   pose_publisher_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(
       "pose", rclcpp::SensorDataQoS());
   gps_fix_publisher_ = this->create_publisher<gps_msgs::msg::GPSFix>(
@@ -21,8 +24,14 @@ FusionEngineNode::FusionEngineNode()
       "imu", rclcpp::SensorDataQoS());
   publisher_ = this->create_publisher<visualization_msgs::msg::Marker>(
       "visualization_marker", 1);
+  nmea_publisher_ = this->create_publisher<nmea_msgs::msg::Sentence>("/nmea", 1);
+  ntrip_subscription_ = this->create_subscription<mavros_msgs::msg::RTCM>(
+      "/rtcm", 10,
+      std::bind(&FusionEngineNode::receiveCorrection, this,
+                std::placeholders::_1));
   timer_ = create_wall_timer(std::chrono::milliseconds(1),
                              std::bind(&FusionEngineNode::serviceLoopCb, this));
+  prev_time_ = -1;
 
   if (this->has_parameter("connection_type")) {
     std::string argValue(this->get_parameter("connection_type").as_string());
@@ -32,7 +41,18 @@ FusionEngineNode::FusionEngineNode()
     } else if (argValue == "udp") {
       fe_interface_.initialize(this, this->get_parameter("udp_port").as_int());
     } else if (argValue == "tty") {
+      nmea_publisher_ = this->create_publisher<nmea_msgs::msg::Sentence>(
+          "ntrip_client/nmea", 10);
+      subscription_ = this->create_subscription<mavros_msgs::msg::RTCM>(
+          "ntrip_client/rtcm", 10,
+          [this](const mavros_msgs::msg::RTCM::SharedPtr msg) {
+            if (this->get_parameter("debug").as_bool())
+              RCLCPP_INFO(this->get_logger(), "RTCM message received.");
+            fe_interface_.write(msg->data.data(), msg->data.size());
+          });
       fe_interface_.initialize(this, this->get_parameter("tty_port").as_string());
+      listener_thread_ =
+          std::thread(std::bind(&FusionEngineNode::dataListenerService, this));
     } else {
       std::cout << "Invalid args" << std::endl;
       rclcpp::shutdown();
@@ -40,6 +60,14 @@ FusionEngineNode::FusionEngineNode()
   } else {
     std::cout << "Invalid args" << std::endl;
     rclcpp::shutdown();
+  }
+}
+
+/******************************************************************************/
+FusionEngineNode::~FusionEngineNode() {
+  if (listener_thread_.joinable()) {
+    gps.stop();
+    listener_thread_.join();
   }
 }
 
@@ -86,10 +114,44 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     p.z = pos.pose.position.z;
 
     if (!std::isnan(p.x) && !std::isnan(p.y) && !std::isnan(p.z)) {
+      if (this->get_parameter("debug").as_bool())
+        RCLCPP_INFO(this->get_logger(), "Point published = [LLA=%f, %f, %f]",
+                    p.x, p.y, p.z);
       points.points.push_back(p);
       publisher_->publish(points);
       id++;
+
+    } else {
+      if (this->get_parameter("debug").as_bool())
+        RCLCPP_INFO(this->get_logger(), "Point dropped = [LLA=%f, %f, %f]", p.x,
+                    p.y, p.z);
     }
+  } else if (header.message_type == MessageType::POSE &&
+             this->get_parameter("connection_type").as_string() == "tty") {
+    auto &contents = *reinterpret_cast<
+        const point_one::fusion_engine::messages::PoseMessage *>(payload);
+    double gps_time_sec =
+        contents.gps_time.seconds + contents.gps_time.fraction_ns * 1e-9;
+    if (gps_time_sec - previous_gps_time_sec_ >
+        TIME_BETWEEN_NMEA_UPDATES_SEC_) {
+      nmea_msgs::msg::Sentence nmea =
+          ConversionUtils::toNMEA(contents, satellite_nb_);
+      nmea.header.stamp = this->now();
+      nmea.header.frame_id = "gps";
+      previous_gps_time_sec_ = gps_time_sec;
+      nmea_publisher_->publish(nmea);
+    }
+  } else if (header.message_type == MessageType::GNSS_SATELLITE) {
+    auto &contents = *reinterpret_cast<
+        const point_one::fusion_engine::messages::GNSSSatelliteMessage *>(
+        payload);
+    satellite_nb_ = contents.num_satellites;
+  } else if (header.message_type == MessageType::GNSS_INFO) {
+    auto &contents = *reinterpret_cast<
+        const point_one::fusion_engine::messages::GNSSInfoMessage *>(payload);
+    if (this->get_parameter("debug").as_bool())
+      RCLCPP_INFO(this->get_logger(), "Corrections age received (%d)",
+                  contents.corrections_age);
   }
 }
 
@@ -117,13 +179,10 @@ void FusionEngineNode::publishNavFixMsg(const gps_msgs::msg::GPSFix &gps_fix) {
 }
 
 /******************************************************************************/
-void FusionEngineNode::serviceLoopCb() {
+void FusionEngineNode::rosServiceLoop() {
   RCLCPP_INFO(this->get_logger(), "Service");
   timer_->cancel();
-  fe_interface_.service();
 }
 
 /******************************************************************************/
-void FusionEngineNode::receiveCorrection(
-    const mavros_msgs::msg::RTCM::SharedPtr msg) {
-}
+void FusionEngineNode::dataListenerService() { gps.dataListenerService(); }
