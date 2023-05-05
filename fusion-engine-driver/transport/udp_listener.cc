@@ -19,9 +19,10 @@ void UdpListener::listen() {
   char their_ip[INET6_ADDRSTRLEN];
 
   open();
+  running_ = true;
 
   try {
-    while (rclcpp::ok()) {
+    while (running_) {
       ssize_t bytes_read = recvfrom(sock_, buffer, sizeof(buffer), 0,
                                     (struct sockaddr *)&their_addr, &addr_len);
       if (bytes_read < 0) {
@@ -76,4 +77,7 @@ void *UdpListener::getInAddr(struct sockaddr *sa) {
 }
 
 /******************************************************************************/
-void UdpListener::write(uint8_t *data, size_t size) {}
+void UdpListener::write(uint8_t *data, size_t size) {
+  static_cast<void>(data);
+  static_cast<void>(size);
+}

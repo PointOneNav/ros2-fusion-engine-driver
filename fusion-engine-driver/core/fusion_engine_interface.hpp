@@ -54,14 +54,16 @@ class FusionEngineInterface {
    * @param frame Message content.
    * @param bytes_read Message size.
    */
-  void DecodeFusionEngineMessage(uint8_t* frame, size_t bytes_read);
+  void decodeFusionEngineMessage(uint8_t* frame, size_t bytes_read);
 
   /**
    * Main service to receive gps data from Atlas.
    */
-  void service();
+  void dataListenerService();
 
   void write(uint8_t* data, size_t size);
+  
+  void stop();
 
  private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;

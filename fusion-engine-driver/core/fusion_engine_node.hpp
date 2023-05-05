@@ -54,11 +54,13 @@ class FusionEngineNode : public rclcpp::Node {
   std::string frame_id_;
   int id = 0;
   std::thread listener_thread_;
+  double previous_gps_time_sec_ = 0;
+  static constexpr double TIME_BETWEEN_NMEA_UPDATES_SEC_{30.0};
 
-  void service();
+  void dataListenerService();
 
   /**
    * Initiate gps unit to read data.
    */
-  void serviceLoopCb();
+  void rosServiceLoop();
 };

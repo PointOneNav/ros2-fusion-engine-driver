@@ -8,9 +8,11 @@ class DataListener {
   virtual ~DataListener() = default;
 
   virtual void listen() = 0;
+  virtual void stop() { running_ = false; }
   virtual void write(uint8_t* data, size_t size) = 0;
   virtual void setCallback(
       const std::function<void(uint8_t*, size_t)>& func) = 0;
 
- private:
+ protected:
+  bool running_{false};
 };

@@ -17,7 +17,7 @@ void FusionEngineInterface::initialize(rclcpp::Node* node,
   this->node_ = node;
   data_listener_ = std::make_shared<TcpListener>(node_, tcp_ip, tcp_port);
   data_listener_->setCallback(
-      std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
+      std::bind(&FusionEngineInterface::decodeFusionEngineMessage, this,
                 std::placeholders::_1, std::placeholders::_2));
   RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tcp in port %d",
               tcp_port);
@@ -28,7 +28,7 @@ void FusionEngineInterface::initialize(rclcpp::Node* node, int udp_port) {
   this->node_ = node;
   data_listener_ = std::make_shared<UdpListener>(node_, udp_port);
   data_listener_->setCallback(
-      std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
+      std::bind(&FusionEngineInterface::decodeFusionEngineMessage, this,
                 std::placeholders::_1, std::placeholders::_2));
   RCLCPP_INFO(node_->get_logger(), "Initialize connection_type udp in port %d",
               udp_port);
@@ -40,7 +40,7 @@ void FusionEngineInterface::initialize(rclcpp::Node* node,
   this->node_ = node;
   data_listener_ = std::make_shared<TtyListener>(node_, tty_port);
   data_listener_->setCallback(
-      std::bind(&FusionEngineInterface::DecodeFusionEngineMessage, this,
+      std::bind(&FusionEngineInterface::decodeFusionEngineMessage, this,
                 std::placeholders::_1, std::placeholders::_2));
   RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tty");
 }
@@ -54,16 +54,21 @@ void FusionEngineInterface::messageReceived(const MessageHeader& header,
 }
 
 /******************************************************************************/
-void FusionEngineInterface::DecodeFusionEngineMessage(uint8_t* frame,
+void FusionEngineInterface::decodeFusionEngineMessage(uint8_t* frame,
                                                       size_t bytes_read) {
   framer.OnData(frame, bytes_read);
 }
 
 /******************************************************************************/
-void FusionEngineInterface::service() {
+void FusionEngineInterface::dataListenerService() {
   RCLCPP_INFO(node_->get_logger(), "Start listening using connection_type");
   data_listener_->listen();
 }
 
 /******************************************************************************/
-void FusionEngineInterface::write(uint8_t* data, size_t size) { data_listener_->write(data, size); }
+void FusionEngineInterface::write(uint8_t* data, size_t size) {
+  data_listener_->write(data, size);
+}
+
+/******************************************************************************/
+void FusionEngineInterface::stop() { data_listener_->stop(); }

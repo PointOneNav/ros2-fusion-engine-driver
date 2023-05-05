@@ -17,8 +17,9 @@ void TcpListener::listen() {
   size_t total_bytes_read = 0;
 
   open();
+  running_ = true;
   try {
-    while (rclcpp::ok()) {
+    while (running_) {
       ssize_t bytes_read = recv(sock_, buffer, sizeof(buffer), 0);
       if (bytes_read < 0) {
         RCLCPP_INFO(node_->get_logger(), "Error reading from socket: %s (%d)",
@@ -70,4 +71,7 @@ int TcpListener::open() {
 }
 
 /******************************************************************************/
-void TcpListener::write(uint8_t* data, size_t size) {}
+void TcpListener::write(uint8_t* data, size_t size) {
+  static_cast<void>(data);
+  static_cast<void>(size);
+}

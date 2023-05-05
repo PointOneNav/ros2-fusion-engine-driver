@@ -60,7 +60,11 @@ FusionEngineNode::FusionEngineNode()
 /******************************************************************************/
 FusionEngineNode::~FusionEngineNode() {
   if (listener_thread_.joinable()) {
+<<<<<<< HEAD
     fe_interface_.stop();
+=======
+    gps.stop();
+>>>>>>> 35d7006 ([ADD] correction RTK works)
     listener_thread_.join();
   }
 }
@@ -124,11 +128,17 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
              this->get_parameter("connection_type").as_string() == "tty") {
     auto &contents = *reinterpret_cast<
         const point_one::fusion_engine::messages::PoseMessage *>(payload);
-    nmea_msgs::msg::Sentence nmea =
-        ConversionUtils::toNMEA(contents, satellite_nb_);
-    nmea.header.stamp = this->now();
-    nmea.header.frame_id = "gps";
-    nmea_publisher_->publish(nmea);
+    double gps_time_sec =
+        contents.gps_time.seconds + contents.gps_time.fraction_ns * 1e-9;
+    if (gps_time_sec - previous_gps_time_sec_ >
+        TIME_BETWEEN_NMEA_UPDATES_SEC_) {
+      nmea_msgs::msg::Sentence nmea =
+          ConversionUtils::toNMEA(contents, satellite_nb_);
+      nmea.header.stamp = this->now();
+      nmea.header.frame_id = "gps";
+      previous_gps_time_sec_ = gps_time_sec;
+      nmea_publisher_->publish(nmea);
+    }
   } else if (header.message_type == MessageType::GNSS_SATELLITE) {
     auto &contents = *reinterpret_cast<
         const point_one::fusion_engine::messages::GNSSSatelliteMessage *>(
@@ -173,4 +183,8 @@ void FusionEngineNode::rosServiceLoop() {
 }
 
 /******************************************************************************/
+<<<<<<< HEAD
 void FusionEngineNode::dataListenerService() { fe_interface_.dataListenerService(); }
+=======
+void FusionEngineNode::dataListenerService() { gps.dataListenerService(); }
+>>>>>>> 35d7006 ([ADD] correction RTK works)
