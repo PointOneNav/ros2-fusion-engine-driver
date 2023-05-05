@@ -68,3 +68,6 @@ int TcpListener::open() {
               _ip.c_str());
   return 0;
 }
+
+/******************************************************************************/
+void TcpListener::write(uint8_t* data, size_t size) {}

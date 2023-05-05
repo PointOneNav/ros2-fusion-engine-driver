@@ -21,6 +21,7 @@ class TcpListener : public DataListener {
 
   void setCallback(const std::function<void(uint8_t *, size_t)> &func);
   void listen();
+  void write(uint8_t *data, size_t size);
 
  private:
   int open();

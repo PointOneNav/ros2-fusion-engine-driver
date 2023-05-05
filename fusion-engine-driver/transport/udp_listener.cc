@@ -74,3 +74,6 @@ void *UdpListener::getInAddr(struct sockaddr *sa) {
   }
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
+
+/******************************************************************************/
+void UdpListener::write(uint8_t *data, size_t size) {}

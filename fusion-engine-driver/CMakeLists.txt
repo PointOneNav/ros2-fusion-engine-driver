@@ -18,13 +18,15 @@ include(FetchContent)
 FetchContent_Declare(
     fusion_engine_client
     GIT_REPOSITORY https://github.com/PointOneNav/fusion-engine-client.git
-    GIT_TAG v1.16.0
+    GIT_TAG v1.18.0
 )
 FetchContent_Populate(fusion_engine_client)
 add_subdirectory(${fusion_engine_client_SOURCE_DIR} ${fusion_engine_client_BINARY_DIR})
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -32,7 +34,6 @@ find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
 find_package(nmea_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -44,6 +45,7 @@ set(SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/core/fusion_engine_node.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/core/fusion_engine_interface.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/fusion_engine_interface.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/serial_port.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/tcp_listener.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/udp_listener.cc
@@ -53,7 +55,7 @@ set(SRC
 add_executable(fusion_engine_ros_driver ${SRC})
 
 target_link_libraries(fusion_engine_ros_driver fusion_engine_client)
-ament_target_dependencies(fusion_engine_ros_driver rclcpp std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs mavros_msgs nmea_msgs)
+ament_target_dependencies(fusion_engine_ros_driver rclcpp rclcpp_components std_msgs gps_msgs sensor_msgs geometry_msgs visualization_msgs mavros_msgs nmea_msgs)
 
 install(TARGETS
   fusion_engine_ros_driver

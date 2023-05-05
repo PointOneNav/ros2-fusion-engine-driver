@@ -1,6 +1,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <thread>
 
 #include "fusion_engine_interface.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
@@ -21,6 +22,7 @@
 class FusionEngineNode : public rclcpp::Node {
  public:
   FusionEngineNode();
+  ~FusionEngineNode();
 
   /**
    * @brief Receive Fusion Message, build and post them in ros system.
@@ -44,15 +46,16 @@ class FusionEngineNode : public rclcpp::Node {
   rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr nav_fix_publisher_;
   rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher_;
   rclcpp::Publisher<nmea_msgs::msg::Sentence>::SharedPtr nmea_publisher_;
-  rclcpp::Subscription<mavros_msgs::msg::RTCM>::SharedPtr ntrip_subscription_;
+  rclcpp::Subscription<mavros_msgs::msg::RTCM>::SharedPtr subscription_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   double prev_time_;
   uint16_t satellite_nb_;
   std::string frame_id_;
   int id = 0;
+  std::thread listener_thread_;
 
-  void receiveCorrection(const mavros_msgs::msg::RTCM::SharedPtr msg);
+  void service();
 
   /**
    * Initiate gps unit to read data.

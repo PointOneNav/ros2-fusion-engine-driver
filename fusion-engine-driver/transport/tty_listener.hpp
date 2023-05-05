@@ -11,11 +11,12 @@ class TtyListener : public DataListener {
   ~TtyListener() = default;
 
   void setCallback(const std::function<void(uint8_t*, size_t)>& func);
-
   void listen();
+  void write(uint8_t* data, size_t size);
 
  private:
   rclcpp::Node* node_;
   std::string port_;
   std::function<void(uint8_t*, size_t)> callback_function_;
+  SerialPort p;
 };

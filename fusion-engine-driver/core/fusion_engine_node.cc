@@ -25,7 +25,7 @@ FusionEngineNode::FusionEngineNode()
   publisher_ = this->create_publisher<visualization_msgs::msg::Marker>(
       "visualization_marker", 1);
   timer_ = create_wall_timer(std::chrono::milliseconds(1),
-                             std::bind(&FusionEngineNode::serviceLoopCb, this));
+                             std::bind(&FusionEngineNode::rosServiceLoop, this));
 
   if (this->has_parameter("connection_type")) {
     std::string argValue(this->get_parameter("connection_type").as_string());
@@ -117,9 +117,18 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
 
     } else {
       if (this->get_parameter("debug").as_bool())
-        std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", "
-                  << p.z << "]" << std::endl;
+        RCLCPP_INFO(this->get_logger(), "Point dropped = [LLA=%f, %f, %f]", p.x,
+                    p.y, p.z);
     }
+  } else if (header.message_type == MessageType::POSE &&
+             this->get_parameter("connection_type").as_string() == "tty") {
+    auto &contents = *reinterpret_cast<
+        const point_one::fusion_engine::messages::PoseMessage *>(payload);
+    nmea_msgs::msg::Sentence nmea =
+        ConversionUtils::toNMEA(contents, satellite_nb_);
+    nmea.header.stamp = this->now();
+    nmea.header.frame_id = "gps";
+    nmea_publisher_->publish(nmea);
   } else if (header.message_type == MessageType::GNSS_SATELLITE) {
     auto &contents = *reinterpret_cast<
         const point_one::fusion_engine::messages::GNSSSatelliteMessage *>(
@@ -154,7 +163,7 @@ void FusionEngineNode::publishNavFixMsg(const gps_msgs::msg::GPSFix &gps_fix) {
   fix.altitude = gps_fix.altitude;
   fix.position_covariance = gps_fix.position_covariance;
   fix.position_covariance_type = gps_fix.position_covariance_type;
-  nav_fix_publisher_->publish(fix);
+  // nav_fix_publisher_->publish(fix);
 }
 
 /******************************************************************************/

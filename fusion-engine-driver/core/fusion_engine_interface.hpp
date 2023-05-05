@@ -61,6 +61,8 @@ class FusionEngineInterface {
    */
   void service();
 
+  void write(uint8_t* data, size_t size);
+
  private:
   point_one::fusion_engine::parsers::FusionEngineFramer framer;
   std::function<void(const MessageHeader& header, const void* payload_in)>
