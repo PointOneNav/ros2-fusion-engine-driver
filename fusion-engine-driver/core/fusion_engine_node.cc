@@ -3,10 +3,10 @@
 /******************************************************************************/
 FusionEngineNode::FusionEngineNode()
     : Node("fusion_engine_node"),
-      gps(std::bind(&FusionEngineNode::receivedFusionEngineMessage, this,
+      fe_interface_(std::bind(&FusionEngineNode::receivedFusionEngineMessage, this,
                     std::placeholders::_1, std::placeholders::_2)) {
   this->declare_parameter("udp_port", 12345);
-  this->declare_parameter("connection_type", "tty");
+  this->declare_parameter("connection_type", "tcp");
   this->declare_parameter("tcp_ip", "localhost");
   this->declare_parameter("tty_port", "/dev/ttyUSB1");
   this->declare_parameter("tcp_port", 12345);
@@ -27,12 +27,12 @@ FusionEngineNode::FusionEngineNode()
   if (this->has_parameter("connection_type")) {
     std::string argValue(this->get_parameter("connection_type").as_string());
     if (argValue == "tcp") {
-      gps.initialize(this, this->get_parameter("tcp_ip").as_string(),
+      fe_interface_.initialize(this, this->get_parameter("tcp_ip").as_string(),
                      this->get_parameter("tcp_port").as_int());
     } else if (argValue == "udp") {
-      gps.initialize(this, this->get_parameter("udp_port").as_int());
+      fe_interface_.initialize(this, this->get_parameter("udp_port").as_int());
     } else if (argValue == "tty") {
-      gps.initialize(this, this->get_parameter("tty_port").as_int());
+      fe_interface_.initialize(this, this->get_parameter("tty_port").as_string());
     } else {
       std::cout << "Invalid args" << std::endl;
       rclcpp::shutdown();
@@ -86,17 +86,11 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     p.y = pos.pose.position.y;
     p.z = pos.pose.position.z;
 
-    points.points.push_back(p);
-    while (publisher_->get_subscription_count() < 1) {
-      if (!rclcpp::ok()) {
-        return;
-      }
-      RCLCPP_WARN_ONCE(this->get_logger(),
-                       "Please create a subscriber to the marker");
-      sleep(1);
+    if (!std::isnan(p.x) && !std::isnan(p.y) && !std::isnan(p.z)) {
+      points.points.push_back(p);
+      publisher_->publish(points);
+      id++;
     }
-    publisher_->publish(points);
-    id++;
   }
 }
 
@@ -127,5 +121,5 @@ void FusionEngineNode::publishNavFixMsg(const gps_msgs::msg::GPSFix &gps_fix) {
 void FusionEngineNode::serviceLoopCb() {
   RCLCPP_INFO(this->get_logger(), "Service");
   timer_->cancel();
-  gps.service();
+  fe_interface_.service();
 }
