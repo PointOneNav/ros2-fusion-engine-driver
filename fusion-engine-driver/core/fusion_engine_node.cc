@@ -87,16 +87,9 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
     p.z = pos.pose.position.z;
 
     if (!std::isnan(p.x) && !std::isnan(p.y) && !std::isnan(p.z)) {
-      std::cout << "Point published = [LLA=" << p.x << ", " << p.y << ", "
-                << p.z << "]" << std::endl;
-
       points.points.push_back(p);
       publisher_->publish(points);
       id++;
-
-    } else {
-      std::cout << "Point dropped = [LLA=" << p.x << ", " << p.y << ", " << p.z
-                << "]" << std::endl;
     }
   }
 }
