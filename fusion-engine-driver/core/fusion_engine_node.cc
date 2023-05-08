@@ -60,11 +60,7 @@ FusionEngineNode::FusionEngineNode()
 /******************************************************************************/
 FusionEngineNode::~FusionEngineNode() {
   if (listener_thread_.joinable()) {
-<<<<<<< HEAD
     fe_interface_.stop();
-=======
-    gps.stop();
->>>>>>> 35d7006 ([ADD] correction RTK works)
     listener_thread_.join();
   }
 }
@@ -183,8 +179,4 @@ void FusionEngineNode::rosServiceLoop() {
 }
 
 /******************************************************************************/
-<<<<<<< HEAD
 void FusionEngineNode::dataListenerService() { fe_interface_.dataListenerService(); }
-=======
-void FusionEngineNode::dataListenerService() { gps.dataListenerService(); }
->>>>>>> 35d7006 ([ADD] correction RTK works)
