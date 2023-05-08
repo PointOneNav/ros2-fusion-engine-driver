@@ -2,7 +2,7 @@
 
 #include "data_listener.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "serial_port_reader.hpp"
+#include "serial_port.hpp"
 
 class TtyListener : public DataListener {
  public:

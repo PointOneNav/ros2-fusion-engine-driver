@@ -64,7 +64,6 @@ void FusionEngineNode::receivedFusionEngineMessage(const MessageHeader &header,
   } else if (header.message_type == MessageType::ROS_POSE) {
     auto &contents = *reinterpret_cast<
         const point_one::fusion_engine::messages::ros::PoseMessage *>(payload);
-
     geometry_msgs::msg::PoseStamped pos = ConversionUtils::toPose(contents);
     visualization_msgs::msg::Marker points;
     pos.header.frame_id = frame_id_;
@@ -122,4 +121,9 @@ void FusionEngineNode::serviceLoopCb() {
   RCLCPP_INFO(this->get_logger(), "Service");
   timer_->cancel();
   fe_interface_.service();
+}
+
+/******************************************************************************/
+void FusionEngineNode::receiveCorrection(
+    const mavros_msgs::msg::RTCM::SharedPtr msg) {
 }

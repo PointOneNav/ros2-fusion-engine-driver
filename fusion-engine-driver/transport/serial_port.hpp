@@ -9,16 +9,17 @@
 #include <iostream>
 #include <string>
 
-class SerialPortReader {
- private:
-  std::string _port;
-  int _serialPort;
-  termios tty;
-
+class SerialPort {
  public:
-  SerialPortReader(std::string const& port);
-  ~SerialPortReader();
+  SerialPort() = default;
 
-  uint8_t portRead(ssize_t n, uint8_t* buffer);
+  bool Open(const char* device_path, uint32_t baud_rate);
+
+  int Read(void* read_buffer, size_t read_size);
+
+  int Write(const void* write_buffer, size_t write_size);
+
+ private:
+  using SerialFile = int;
+  SerialFile serial_port_;
 };
-
