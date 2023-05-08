@@ -169,7 +169,7 @@ void FusionEngineNode::publishNavFixMsg(const gps_msgs::msg::GPSFix &gps_fix) {
   fix.altitude = gps_fix.altitude;
   fix.position_covariance = gps_fix.position_covariance;
   fix.position_covariance_type = gps_fix.position_covariance_type;
-  // nav_fix_publisher_->publish(fix);
+  nav_fix_publisher_->publish(fix);
 }
 
 /******************************************************************************/
