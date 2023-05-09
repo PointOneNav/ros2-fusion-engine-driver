@@ -40,7 +40,7 @@ class DataListener {
    *
    * This pure virtual function must be implemented by any subclass of
    * DataListener. It is responsible for writing data to the data listener,
-   * typically to send commands or configuration data to the sensor or device.
+   * typically to send rtcm correction for the serial mode.
    *
    * @param data A pointer to the data buffer to be written.
    * @param size The size of the data buffer in bytes.

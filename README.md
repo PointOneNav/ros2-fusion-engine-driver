@@ -154,6 +154,17 @@ git checkout ros2
 cd ..
 colcon build --packages-select ntrip_client
 source install/local_setup.bash
+```
+once these commands are done you can launch the node, here is the list of parameters and an example of execution.
+
+Optional launch parameters:
+  - host: Hostname or IP address of the NTRIP server to connect to and receive corrections from 
+  - port: Port to connect to on the server. Default: 2101 - mountpoint: Mountpoint to connect to on the NTRIP server
+  - authenticate: Whether or not to authenticate with the server, or send an unauthenticated request. If set to true, username, and password must be supplied.
+  - username: Username to use when authenticating with the NTRIP server. Only used if authenticate is true
+  - password: Password to use when authenticating with the NTRIP server. Only used if authenticate is true
+
+```
 ros2 launch ntrip_client ntrip_client_launch.py host:=[HOST] mountpoint:=[MOUNTPOINT]  username:=[YOUR USERNAME] password:=[YOUR PASSWORD]
 ```
 
