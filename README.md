@@ -155,7 +155,7 @@ cd ..
 colcon build --packages-select ntrip_client
 source install/local_setup.bash
 ```
-once these commands are done you can launch the node, here is the list of parameters and an example of execution.
+Once these commands are done you can launch the node, here is the list of parameters and an example of execution.
 
 Optional launch parameters:
   - host: Hostname or IP address of the NTRIP server to connect to and receive corrections from 
