@@ -38,9 +38,9 @@ class DataListener {
   /**
    * @brief Writes data to the data listener.
    *
-   * This pure virtual function must be implemented by any subclass of
-   * DataListener. It is responsible for writing data to the data listener,
-   * typically to send rtcm correction for the serial mode.
+   * This pure virtual function is responsible for writing data to the
+   * underlying socket protocole (e.g. serial or TCP), in our case, mainly to
+   * send RTCM corrections to our quectel device in serial mode.
    *
    * @param data A pointer to the data buffer to be written.
    * @param size The size of the data buffer in bytes.

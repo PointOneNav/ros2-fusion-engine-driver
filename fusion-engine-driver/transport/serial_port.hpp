@@ -10,7 +10,8 @@
 #include <string>
 
 /**
- * @brief A class representing a serial port for reading and writing data.
+ * @brief A class representing a serial port for reading and writing data over
+ * serial.
  */
 class SerialPort {
  public:

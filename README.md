@@ -168,6 +168,9 @@ Optional launch parameters:
 ros2 launch ntrip_client ntrip_client_launch.py host:=[HOST] mountpoint:=[MOUNTPOINT]  username:=[YOUR USERNAME] password:=[YOUR PASSWORD]
 ```
 
+Here is the complete documentation for ntrip client node.
+https://index.ros.org/r/ntrip_client/
+
 Once the node is connected to the server you can connect the node in serial.
 To connect to a device over serial, specify the serial port device name as follows:
 

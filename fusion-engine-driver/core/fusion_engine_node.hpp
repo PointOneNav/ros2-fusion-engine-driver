@@ -40,7 +40,7 @@ class FusionEngineNode : public rclcpp::Node {
 
  private:
   /**
-   * @brief Interface made for manage the reception of the fusion engines's
+   * @brief Interface made to manage the reception of the fusion engines's
    * messages.
    *
    */
