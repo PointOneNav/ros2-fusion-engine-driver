@@ -16,10 +16,10 @@ void TtyListener::listen() {
   size_t total_bytes_read = 0;
   uint8_t buffer[1024];
 
-  p.Open(port_.c_str(), 460800);
+  serial_port_.Open(port_.c_str(), 460800);
   running_ = true;
   while (running_) {
-    ssize_t bytes_read = p.Read(&buffer[0], 1024);
+    ssize_t bytes_read = serial_port_.Read(&buffer[0], 1024);
   
     if (bytes_read < 0) {
       RCLCPP_INFO(node_->get_logger(), "Error reading from socket: %s (%d)",
@@ -37,4 +37,4 @@ void TtyListener::listen() {
 }
 
 /******************************************************************************/
-void TtyListener::write(uint8_t* data, size_t size) { p.Write(data, size); }
+void TtyListener::write(uint8_t* data, size_t size) { serial_port_.Write(data, size); }

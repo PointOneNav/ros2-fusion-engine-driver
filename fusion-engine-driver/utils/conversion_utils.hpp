@@ -149,16 +149,6 @@ class ConversionUtils {
     return ss.str();
   }
 
-  static std::string decimalToDMS(double decimal) {
-    int degrees = (int)decimal;
-    double minutes_double = (decimal - degrees) * 60.0;
-    double minutes = floor(minutes_double * 100000) / 100000.0;
-    std::stringstream ss;
-    ss << std::setfill('0') << std::setw(3) << degrees << std::fixed
-       << std::setprecision(4) << std::setw(5) << (minutes * 100.0);
-    return ss.str();
-  }
-
   static std::string nmea_deg_to_ddmm(double angle_deg,
                                       bool is_longitude = false) {
     std::string direction;

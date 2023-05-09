@@ -18,5 +18,5 @@ class TtyListener : public DataListener {
   rclcpp::Node* node_;
   std::string port_;
   std::function<void(uint8_t*, size_t)> callback_function_;
-  SerialPort p;
+  SerialPort serial_port_;
 };

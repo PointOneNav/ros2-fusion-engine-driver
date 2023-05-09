@@ -45,7 +45,6 @@ set(SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/core/fusion_engine_node.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/core/fusion_engine_interface.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/core/fusion_engine_interface.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/serial_port.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/tcp_listener.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/udp_listener.cc
