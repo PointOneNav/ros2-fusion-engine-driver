@@ -24,17 +24,6 @@ void FusionEngineInterface::initialize(rclcpp::Node* node,
 }
 
 /******************************************************************************/
-void FusionEngineInterface::initialize(rclcpp::Node* node, int udp_port) {
-  this->node_ = node;
-  data_listener_ = std::make_shared<UdpListener>(node_, udp_port);
-  data_listener_->setCallback(
-      std::bind(&FusionEngineInterface::decodeFusionEngineMessage, this,
-                std::placeholders::_1, std::placeholders::_2));
-  RCLCPP_INFO(node_->get_logger(), "Initialize connection_type udp in port %d",
-              udp_port);
-}
-
-/******************************************************************************/
 void FusionEngineInterface::initialize(rclcpp::Node* node,
                                        const std::string& tty_port) {
   this->node_ = node;
@@ -42,7 +31,8 @@ void FusionEngineInterface::initialize(rclcpp::Node* node,
   data_listener_->setCallback(
       std::bind(&FusionEngineInterface::decodeFusionEngineMessage, this,
                 std::placeholders::_1, std::placeholders::_2));
-  RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tty");
+  RCLCPP_INFO(node_->get_logger(), "Initialize connection_type tty on port %s",
+              tty_port.c_str());
 }
 
 /******************************************************************************/

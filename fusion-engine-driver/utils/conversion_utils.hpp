@@ -104,6 +104,12 @@ class ConversionUtils {
     return pose_stamped;
   }
 
+  /**
+   * @brief Calculate the XOR checksum of a string message.
+   *
+   * @param message The string message to calculate the checksum for.
+   * @return The calculated checksum as a single char.
+   */
   static char calculate_checksum(const std::string& message) {
     char checksum = 0;
     for (auto c : message) {
@@ -112,6 +118,12 @@ class ConversionUtils {
     return checksum;
   }
 
+  /**
+   * @brief Convert GPS time to UTC time in string format.
+   *
+   * @param gps_time The GPS time to convert, in seconds.
+   * @return The UTC time in string format (hhmmss.ssssss).
+   */
   static std::string ConvertGpsToUtc(double gps_time) {
     const int kSecondsInDay = 86400;
     const int kLeapSecondsOffset = 18;
@@ -149,6 +161,13 @@ class ConversionUtils {
     return ss.str();
   }
 
+  /**
+   * @brief Converts a degree-based latitude or longitude to a NMEA DDMM format
+   * @param angle_deg The angle to be converted in degrees
+   * @param is_longitude A flag indicating whether the angle represents a
+   * longitude
+   * @return A string in NMEA DDMM format
+   */
   static std::string nmea_deg_to_ddmm(double angle_deg,
                                       bool is_longitude = false) {
     std::string direction;
@@ -168,6 +187,13 @@ class ConversionUtils {
     return oss.str();
   }
 
+  /**
+   * @brief Converts the given PoseMessage to a NMEA GPGGA sentence.
+   *
+   * @param contents The PoseMessage to convert.
+   * @param nb_satellite The number of GPS satellites used to generate the pose.
+   * @return A NMEA GPGGA sentence as a nmea_msgs::msg::Sentence.
+   */
   static nmea_msgs::msg::Sentence toNMEA(
       const point_one::fusion_engine::messages::PoseMessage& contents,
       uint16_t& nb_satellite) {
