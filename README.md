@@ -145,6 +145,7 @@ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_
 ### Connecting Over Serial
 
 In serial mode, it is possible to access the rtk correction. To do this you need to run the ntrip client node of ros2 in parallel.
+To connect to a ntrip server, you have to follow the instructions as follows:
 
 ```
 git clone https://github.com/LORD-MicroStrain/ntrip_client
