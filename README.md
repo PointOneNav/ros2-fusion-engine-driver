@@ -39,6 +39,17 @@ One FusionEngine or a Point One device (Atlas, Quectel LG69T, etc.), please cont
   ```
   sudo apt-get install ros-humble-gps-msgs
   ```
+- The ROS `nmea-msgs` package for the version of ROS 2 that you installed above. For example, if you installed ROS 2
+  Humble:
+  ```
+  sudo apt install ros-humble-nmea-msgs
+  ```
+- The ROS `mavros-msgs` package for the version of ROS 2 that you installed above. For example, if you installed ROS 2
+  Humble:
+  ```
+   sudo apt install ros-humble-mavros
+  ```
+
 - A Point One FusionEngine device (https://pointonenav.com/product/)
 
 ## Installation
@@ -133,6 +144,33 @@ ros2 run fusion-engine-driver fusion_engine_ros_driver --ros-args -p connection_
 
 ### Connecting Over Serial
 
+In serial mode, it is possible to access the rtk correction. To do this you need to run the ntrip client node of ros2 in parallel.
+To connect to a ntrip server, you have to follow the instructions as follows:
+
+```
+git clone https://github.com/LORD-MicroStrain/ntrip_client
+cd ntrip_client
+git checkout ros2
+cd ..
+colcon build --packages-select ntrip_client
+source install/local_setup.bash
+```
+Once these commands are done you can launch the node, here is the list of parameters and an example of execution.
+
+Optional launch parameters:
+  - host: Hostname or IP address of the NTRIP server to connect to and receive corrections from 
+  - port: Port to connect to on the server. Default: 2101 - mountpoint: Mountpoint to connect to on the NTRIP server
+  - authenticate: Whether or not to authenticate with the server, or send an unauthenticated request. If set to true, username, and password must be supplied.
+  - username: Username to use when authenticating with the NTRIP server. Only used if authenticate is true
+  - password: Password to use when authenticating with the NTRIP server. Only used if authenticate is true
+
+```
+ros2 launch ntrip_client ntrip_client_launch.py host:=[HOST] mountpoint:=[MOUNTPOINT]  username:=[YOUR USERNAME] password:=[YOUR PASSWORD]
+```
+
+[Here is the complete documentation for ntrip client node.](https://index.ros.org/r/ntrip_client/)
+
+Once the node is connected to the server you can connect the node in serial.
 To connect to a device over serial, specify the serial port device name as follows:
 
 ```
