@@ -7,6 +7,7 @@
 #include <ctime>
 #include <numeric>
 #include <sstream>
+#include <unordered_map>
 
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "gps_msgs/msg/gps_fix.hpp"
@@ -118,6 +119,21 @@ class ConversionUtils {
     return checksum;
   }
 
+  static int getLastLeapSecondDate() {
+      std::string lastDate;
+      int lastLeapSecond = 0;
+      
+      for (const auto& entry : getLeapSeconds()) {
+          if (entry.first > lastLeapSecond) {
+              lastLeapSecond = entry.first;
+              lastDate = entry.second;
+          }
+      }
+      
+      std::cout << lastLeapSecond << std::endl;
+      return lastLeapSecond;
+  }
+
   /**
    * @brief Convert GPS time to UTC time in string format.
    *
@@ -126,7 +142,7 @@ class ConversionUtils {
    */
   static std::string ConvertGpsToUtc(double gps_time) {
     const int kSecondsInDay = 86400;
-    const int kLeapSecondsOffset = 18;
+    const int kLeapSecondsOffset = getLastLeapSecondDate();
 
     // Extract GPS time components
     int gps_hours = static_cast<int>((gps_time / 3600.0));
@@ -219,5 +235,39 @@ class ConversionUtils {
     nmea_stream << "*" << std::hex << static_cast<int>(checksum) << std::endl;
     nmea.sentence = nmea_stream.str();
     return nmea;
+  }
+
+  static const std::unordered_map<int, std::string>& getLeapSeconds() {
+    static const std::unordered_map<int, std::string> leap_seconds_ = {
+      {10, "01 Jan 1972"},
+      {11, "01 Jul 1972"},
+      {12, "01 Jan 1973"},
+      {13, "01 Jan 1974"},
+      {14, "01 Jan 1975"},
+      {15, "01 Jan 1976"},
+      {16, "01 Jan 1977"},
+      {17, "01 Jan 1978"},
+      {18, "01 Jan 1979"},
+      {19, "01 Jan 1980"},
+      {20, "01 Jul 1981"},
+      {21, "01 Jul 1982"},
+      {22, "01 Jul 1983"},
+      {23, "01 Jul 1985"},
+      {24, "01 Jan 1988"},
+      {25, "01 Jan 1990"},
+      {26, "01 Jan 1991"},
+      {27, "01 Jul 1992"},
+      {28, "01 Jul 1993"},
+      {29, "01 Jul 1994"},
+      {30, "01 Jan 1996"},
+      {31, "01 Jul 1997"},
+      {32, "01 Jan 1999"},
+      {33, "01 Jan 2006"},
+      {34, "01 Jan 2009"},
+      {35, "01 Jul 2012"},
+      {36, "01 Jul 2015"},
+      {37, "01 Jan 2017"}
+    };
+    return leap_seconds_;
   }
 };
