@@ -35,6 +35,7 @@ FusionEngineNode::FusionEngineNode()
     if (argValue == "tcp") {
       fe_interface_.initialize(this, this->get_parameter("tcp_ip").as_string(),
                                this->get_parameter("tcp_port").as_int());
+      dataListenerService();
     } else if (argValue == "tty") {
       nmea_publisher_ = this->create_publisher<nmea_msgs::msg::Sentence>(
           "ntrip_client/nmea", 10);
