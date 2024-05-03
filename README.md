@@ -1,3 +1,7 @@
+# Deprecated
+
+We are working on a new version of the ROS2 driver to better adhere to the design patterns commonly found in newer ROS packages. 
+
 # Point One FusionEngine ROS 2 Driver
 
 This project contains support for interacting with the Point One navigation engine in ROS 2 using the FusionEngine
